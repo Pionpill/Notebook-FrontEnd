@@ -1,0 +1,64 @@
+\documentclass{PionpillNote-book}
+
+\title{JavaScript 高级程序设计 笔记}
+\author{
+    Pionpill \footnote{笔名：北岸，电子邮件：673486387@qq.com，Github：\url{https://github.com/Pionpill}} \\
+    本文档为作者学习《JavaScript 高级程序设计》\footnote{《Professional JavaScript for Web Developers》:Matt Frisbie 2020年9月第2版}一书时的笔记。\\
+}
+
+\date{\today}
+
+\begin{document}
+
+\pagestyle{plain}
+\maketitle
+
+\noindent\textbf{前言：}
+
+笔者为软件工程系在校本科生，主要用 JavaScript 做一些前端项目。
+
+<<JavaScript 高级程序设计>> 是 JavaScript 学习的一本入门及进阶书，原书中文版多达117万字，笔者将其分为三个部分：
+\begin{itemize}
+    \item JavaScript 基础：数据结构，分支语句，函数，面向对象等基础知识
+    \item JavaScript 进阶：异步，多线程，DOM，BOM，JSON/XML 处理等常用知识
+    \item JavaScript 前沿：ES6 之后的新特性。
+\end{itemize}
+
+本笔记不能代替原书，仅是对原书的一个总结归纳，笔记上只有知识点的总结，并没有详细的理解性语句，如有需要，还请购买原书。本文所在Github仓库采用 GPL v3 协议，但请勿将本文商业使用，本文引用了一些 CSDN 或其他论讨的文章，如果原作者觉得不合适，请联系本人。
+
+此外，关于 Web 开发，避不开又令所有技术员头疼的是各种历史遗留问题，以及不同浏览器兼容问。，由于笔者仅为一名大三学生，预计读完研究生后才会真正工程性地利用这些技术\footnote{希望到时候没这些问题}。所以对于这些历史与兼容问题，除非特别重要，笔记中不再详述。这些问题包括：
+\begin{itemize}
+    \item IE 浏览器适配
+    
+    微软已经改用 Chrome 核心的 Edge 浏览器了，本文直接屏蔽 IE 浏览器。
+    \item W3C 规则
+    
+    早期 JS 发展并没有统一的标准，这段时间造成的历史问题。
+    \item 淘汰技术
+    
+    部分已被淘汰(正在淘汰)的技术，比如 XHTML，CSS标签的部分不常用属性。
+\end{itemize}
+
+本人的编写及开发环境如下：
+\begin{itemize}
+    \item IDE: VSCode 1.62
+    \item Chrome: 91.0
+    \item Node.js: 14.16
+    \item Window10: 10.0.19042
+\end{itemize}
+
+此外，JavaScript 是一门语法十分宽松的语言，其语法在某些方面甚至比 Python 都要自由，但考虑到可读性，笔记中只强调推荐的写法，至于一些可行但不推荐的写法，仅提示。
+
+\date{\today}
+\tableofcontents
+\newpage
+
+\setcounter{page}{1} 
+\pagestyle{fancy}
+
+
+\import{Parts/Part-1/Chapter-1}{section-1.tex}
+
+
+\end{document}
+
