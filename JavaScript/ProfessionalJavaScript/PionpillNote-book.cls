@@ -111,8 +111,9 @@
 \newtheorem{conditions}{\hspace{2em}条件}[section]
 \newtheorem{property}{\hspace{2em}性质}[section]
 \newtheorem{warning}{\hspace{2em}警告}[section] 
-\newtheorem{tip}{\hspace{2em}提示}[section] 
-\newtheorem{version}{\hspace{2em}兼容}[section]
+\newtheorem{notice}{\hspace{2em}注意}[section] 
+\newtheorem{advise}{\hspace{2em}建议}[section] 
+\newtheorem{version}{\hspace{2em}问题}[section]
 
 
 % ========================= 基础格式 =========================
@@ -275,6 +276,17 @@
 % 宏指令
 \newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}  
 
+% 设置matlab代码环境
+\lstnewenvironment{matlab}[1][]{
+    \lstset{
+        language=Matlab,
+        % deletekeywords={disp},                    % 可在此行去除特定关键词的语法高亮		
+        keywordstyle=\color{blue},                  % 设置关键词样式
+        stringstyle=\color[rgb]{0.75,0,0.75},       % 设置字符串样式
+        commentstyle=\songti\color[rgb]{0,0.5,0},   % 设置注释样式
+        #1
+    }
+}{}
 
 % 设置 Python 代码风格
 \lstset{
@@ -302,18 +314,6 @@
     xleftmargin=40pt,
 }
 
-% 设置matlab代码环境
-\lstnewenvironment{matlab}[1][]{
-	\lstset{
-		language=Matlab,
-		% deletekeywords={disp},                    % 可在此行去除特定关键词的语法高亮		
-		keywordstyle=\color{blue},                  % 设置关键词样式
-		stringstyle=\color[rgb]{0.75,0,0.75},       % 设置字符串样式
-		commentstyle=\songti\color[rgb]{0,0.5,0},   % 设置注释样式
-		#1
-	}
-}{}
-
 % 设置python代码环境
 \lstnewenvironment{python}[1][]{
 	\lstset{
@@ -327,6 +327,130 @@
         keywordstyle=\color{custom-blue},
         commentstyle=\color{custom-green},
         stringstyle=\color{custom-red},
+        breaklines=true,
+        breakatwhitespace=true,
+        tabsize=2,
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{gray}\ttfamily,
+        stepnumber=1,
+        flexiblecolumns,   
+        breaklines=true,
+        basewidth=0.5em,
+        numbersep=10pt,
+        xleftmargin=40pt,
+	}
+}{}
+
+% 设置 HTML 代码风格
+\lstset{
+    frame=l,
+    backgroundcolor=\color{lightgray!10},
+    language=HTML,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    basicstyle={\footnotesize\ttfamily},
+    keywordstyle=\color{vscode-dark-blue},
+    commentstyle=\color{vscode-dark-green},
+    stringstyle=\color{vscode-light-orange},
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=2,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray}\ttfamily,
+    stepnumber=1,
+    flexiblecolumns,   
+    breaklines=true,
+    basewidth=0.5em,
+    numbersep=10pt,
+    xleftmargin=40pt,
+}
+
+% 设置 HTML 代码环境
+\lstnewenvironment{HTML}[1][]{
+	\lstset{
+        frame=l,
+        backgroundcolor = \color{lightgray!10},
+        language=HTML,
+        aboveskip=3mm,
+        belowskip=3mm,
+        showstringspaces=false,
+        basicstyle={\footnotesize\ttfamily},
+        keywordstyle=\color{vscode-dark-blue},
+        commentstyle=\color{vscode-dark-green},
+        stringstyle=\color{vscode-light-orange},
+        breaklines=true,
+        breakatwhitespace=true,
+        tabsize=2,
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{gray}\ttfamily,
+        stepnumber=1,
+        flexiblecolumns,   
+        breaklines=true,
+        basewidth=0.5em,
+        numbersep=10pt,
+        xleftmargin=40pt,
+	}
+}{}
+
+% 定义 JavaScript 语言
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, let, const, document},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+% 设置 JavaScript 代码风格
+\lstset{
+    frame=l,
+    backgroundcolor=\color{lightgray!10},
+    language=JavaScript,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    basicstyle={\footnotesize\ttfamily},
+    keywordstyle=\color{custom-blue},
+    commentstyle=\color{custom-green},
+    stringstyle=\color{vscode-light-orange},
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=2,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray}\ttfamily,
+    stepnumber=1,
+    flexiblecolumns,   
+    breaklines=true,
+    basewidth=0.5em,
+    numbersep=10pt,
+    xleftmargin=40pt,
+}
+
+% 设置 JavaScript 代码环境
+\lstnewenvironment{JavaScript}[1][]{
+	\lstset{
+        frame=l,
+        backgroundcolor = \color{lightgray!10},
+        language=JavaScript,
+        aboveskip=3mm,
+        belowskip=3mm,
+        showstringspaces=false,
+        basicstyle={\footnotesize\ttfamily},
+        keywordstyle=\color{custom-blue},
+        commentstyle=\color{custom-green},
+        stringstyle=\color{vscode-light-orange},
         breaklines=true,
         breakatwhitespace=true,
         tabsize=2,
