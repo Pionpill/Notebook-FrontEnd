@@ -466,3 +466,58 @@
         xleftmargin=40pt,
 	}
 }{}
+
+
+% 设置 bash 代码风格
+\lstset{
+    frame=l,
+    backgroundcolor=\color{lightgray!10},
+    language=bash,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    basicstyle={\footnotesize\ttfamily},
+    keywordstyle=\color{vscode-dark-blue},
+    commentstyle=\color{vscode-dark-green},
+    stringstyle=\color{vscode-light-orange},
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=2,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray}\ttfamily,
+    stepnumber=1,
+    flexiblecolumns,   
+    breaklines=true,
+    basewidth=0.5em,
+    numbersep=10pt,
+    xleftmargin=40pt,
+}
+
+% 设置 bash 代码环境
+\lstnewenvironment{bash}[1][]{
+	\lstset{
+        frame=l,
+        backgroundcolor = \color{lightgray!10},
+        language=bash,
+        aboveskip=3mm,
+        belowskip=3mm,
+        showstringspaces=false,
+        basicstyle={\footnotesize\ttfamily},
+        keywordstyle=\color{vscode-dark-blue},
+        commentstyle=\color{vscode-dark-green},
+        stringstyle=\color{vscode-light-orange},
+        breaklines=true,
+        breakatwhitespace=true,
+        tabsize=2,
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{gray}\ttfamily,
+        stepnumber=1,
+        flexiblecolumns,   
+        breaklines=true,
+        basewidth=0.5em,
+        numbersep=10pt,
+        xleftmargin=40pt,
+	}
+}{}
