@@ -80,3 +80,86 @@ colors instanceof Array;    // colors 是 Array 吗?
     \item \texttt{try/catch} 语句的 \texttt{catch} 块
     \item \texttt{with} 语句
 \end{itemize}
+
+\subsubsection{变量声明}
+
+\texttt{var，let，const} 关键字以在前文进行过说明，这里不再累述。
+
+在子块中如果声明和父块同名的变量会掩盖父级变量，也即在子块中对这一变量的调用指的都是子块中的变量。如果父块是全局作用域，则可以使用 \texttt{windows.name} 调用对应变量。
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{advise}
+            虽然 JavaScript 允许父块和子块中出现同名变量，但不建议这样使用。
+        \end{advise}
+    }
+}
+
+\subsection{垃圾回收}
+\subsubsection{标记清理}
+
+所有现代浏览器采用的 JavaScript 垃圾回收机制都是标记清理。当变量进入上下文时，变量会被加上存在于上下文中的标记。当变量离开上下文时，也会被机上离开上下文的标记\footnote{加标记也是局部变量与全局变量不同的原因。}。
+
+垃圾回收程序运行时，会标记内存中存储的所有变量。然后，它会将所有在上下文中的变量，以及被在上下文中的变量引用的变量的标记去掉。在此之后再被加上标记的变量就是待删除的了。随后垃圾回收程序做一次内存清理，销毁带标记的所有指并回收它们的内存。
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{notice}
+            还有一种垃圾回收机制：引用计数。不过已经被绝大多数浏览器弃用了。但 Python 的垃圾回收机制采用的是这种方式，有兴趣请读者自行查阅资料。
+        \end{notice}
+    }
+}
+
+垃圾回收机制是涉及浏览器底层的操作，了解这些底层知识对开发者并没有太多的益处，而且，开发者也无法改善这种底层操作(需要浏览器改善)。因此，这里我省略了很多书上的理论内容。
+
+\subsubsection{内存管理}
+
+处于优化考虑，系统只会给浏览器分配较少的内存。因此将内存占用量保存在一个较小的值可以让页面性能更好。优化内存最好的方法就是只保存必要的数据。如果数据不需要，那么把它设置为 \texttt{null}，从而释放其引用。这也可以叫做解除引用。这个做法尤其适用于全局变量，因为局部变量在超出作用域后会自动被解除引用。
+
+\begin{JavaScript}
+let person = new Object();
+person.name = "Pionpill";
+
+let person = null;      // 解除引用
+\end{JavaScript}
+
+不过要注意，解除一个值的引用并不会自动导致相关内存被回收(可能多个变量指向同一对象)。解除引用的关键在于确保相关的值已经不在上下文。因此在下次垃圾回收时可能会将其回收。
+
+\noindent\textbf{使用 \texttt{let，const}}
+
+由于 \texttt{let，const} 关键字在声明变量时是块作用域，因此，在垃圾回收过程中变量会更加快速地被处理，而 \texttt{var} 则相对迟钝。
+
+\noindent\textbf{隐藏类}
+
+隐藏类是一种优化处理，Chrome 浏览器的 V8 引擎在解释后会采用这种优化处理，从而产生隐藏类。
+
+简而言之，如果两个示例相同(构造方法相同，类相同)，那么它们可能会指向同一个对象，这样就节省了开辟一个相同对象地空间。如果其中某个对象被改动了，则会智能地再创建一个新对象。这种处理方式和 Python 类似\footnote{我的另一本 《Fluent Python》 笔记有详细解释 Python 的这种做法。}。详细的处理过程请读者自行查阅文献，下面仅给出处理隐藏类的一些建议。
+
+隐藏类固然有好处，但是如果使用不当，这会成为累赘，比如如果我们要创建两个不同的类实例：应该在创建时就区分它们，而不是使用相同的构造函数(这样两个实例名会先指向同一实例，更改后再重新创建实例，步骤多余)。
+
+\begin{JavaScript}
+function Article(opt) {
+    this.title = "ababababa";
+    this.author = opt;
+}
+
+let a1 = new Article();
+let a2 = new Article("Pionpill");
+\end{JavaScript}
+
+此外，如果两个变量共享一个隐藏类，请不要使用 \texttt{delete} 语句修改类属性，这会导致生成相同的隐藏类片段，如果要删除，应该将值设为 \texttt{null}。
+
+\begin{JavaScript}
+let a1 = new Article();
+let a2 = new Article();
+
+a1.author = null;
+\end{JavaScript}
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{notice}
+            CSDN 上鲜有隐藏类的相关文章，只有极致追求性能的开发者才会关注隐藏类的优化处理。在开发阶段无需过多关于这些内容，等优化阶段再处理。
+        \end{notice}
+    }
+}
