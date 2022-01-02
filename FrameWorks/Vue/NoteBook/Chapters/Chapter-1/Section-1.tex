@@ -1,0 +1,70 @@
+\chapter{Vue 基础与快速入门}
+
+这章只学一些浅显的内容，方便入门。
+
+\section{安装与创建项目}
+在安装 Vue 之前，要确保已经安装过 Node.js 和 npm(npm 内嵌在 Node.js 中)。
+
+Vue 是渐进式的 JavaScript 框架，这意味着它可以根据需求以多种方式集成到一个项目中。主要的四种方式为:
+
+\begin{itemize}
+    \item 在页面上以 CDN 包的形式导入。
+    \item 下载 JavaScript 文件并自行托管。
+    \item 使用 npm 安装它。
+    \item 使用官方 CLI 来构建一个项目。
+\end{itemize}
+
+下面仅介绍主流的 npm 安装 vue3 方法\footnote{其它方法参考: \url{https://v3.cn.vuejs.org/guide/installation.html}}。
+
+\subsection{npm 安装 vue3}
+
+使用下面指令可以安装 vue3。
+
+\begin{bash}
+# 安装最新稳定版
+npm install vue@next
+# 安装完成后查看版本
+vue -V
+\end{bash}
+
+Vue 还提供了编写单文件组件的配套工具。如果你想使用单文件组件，那么你还需要安装:
+
+\begin{bash}
+npm install -D @vue/compiler-sfc
+\end{bash}
+
+\subsection{Vue 的一些说明}
+
+Vue 是渐进式框架，因此可以和原始的 HTML 文件并存。此外所有使用 Vue 语法编写的代码或文件都能转换为 Html 代码。
+
+Vue 除了自己的语法，同时支持 JSX 等多种语法，往往语法不一样，但实现效果是相同的。
+
+\subsection{CDN 引用}
+Vue 可以当都引入一个 Html 文件，只需加入如下代码(二选一):
+\begin{HTML}
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<!-- 生产环境版本，优化了尺寸和速度 -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+\end{HTML}
+
+\subsection{创建 Vue 项目}
+\subsubsection{图形化界面}
+
+Vue3 提供了图形化创建项目的方式，通过下面指令进入:
+
+\begin{bash}
+vue ui
+\end{bash}
+
+进入项目管理，按需求创建项目(ui 界面跟着做就行，不再多介绍)。
+
+\subsubsection{命令行创建}
+
+\texttt{cd} 到需要创建项目的位置后，输入如下指令:
+\begin{bash}
+vue init webpack project
+\end{bash}
+
+其中 \texttt{project} 是项目名，可以自行命名。\texttt{webpack} 是以 \texttt{webpack} 为模板生成项目，还可以是其他模板。在下载好必要的包后，会提示一连串内容供开发者选择，大部分不是 Vue 所必需的，多为辅助构建项目，或者格式化代码等，这都不是 Vue 框架内的知识，请读者自行查阅资料了解。
+\newpage

@@ -1,0 +1,104 @@
+\section{函数}
+
+ECMAScript 中，每个函数都是 \texttt{Function} 类型的实例\footnote{与 Python 一样。}。而 \texttt{Function} 也有属性和方法，跟其他引用类型一样。函数名就是指向函数对象的指针，而且不一定与函数本身密切绑定。函数通常以函数声明的方式定义:
+
+\begin{JavaScript}
+function sum(num1, num2) {
+    return num1 + num2;
+}
+\end{JavaScript}
+
+另一种定义函数的语法是函数表达式。函数表达式与函数声明几乎是等价的:
+
+\begin{JavaScript}
+let sum = function(num1, num2) {
+    return num1 + num2;
+};
+\end{JavaScript}
+
+注意函数表达式最后是要带分号的，而函数声明则没有必要。
+
+还有一种定义函数的方式与函数表达式很想，叫``箭头函数'':
+
+\begin{JavaScript}
+let sum = (num1, num2) => {
+    return num1 + num2;
+};
+\end{JavaScript}
+
+最后一种定义函数的方式是使用 \texttt{Function} 构造函数。这个构造函数手机任意多个字符串参数，最后一个参数为函数体，之前的参数都是新函数的参数:
+
+\begin{JavaScript}
+let sum = new Function("num1", "num2", "return num1 + num2");
+\end{JavaScript}
+
+这种方式并不推荐，会影响内部处理的性能。不过要记作 ECMAScript 中的函数是对象，函数名是指针。
+
+\subsection{箭头函数}
+
+箭头函数是 ES6 新增的语法。箭头函数和函数表达式十分相像，任何可以使用函数表达式的地方，都可以使用箭头函数。
+
+箭头函数的语法非常适合嵌入函数的场景:
+
+\begin{JavaScript}
+let ints = [1,2,3];
+console.log(ints.map(function(i) {return i+1;}));   // [2,3,4]
+console.log(ints.map((i) => {return i+1;}));   // [2,3,4]
+\end{JavaScript}
+
+如果只有一个参数，那可以不用括号。
+
+\begin{JavaScript}
+let double = (x) => {return 2*x;};
+let triple = x => {return 3*x;};
+\end{JavaScript}
+
+如果函数语句十分精简，只需要一行代码，那么大括号也可以省略。省略大括号会隐式返回这些代码的值(不需要额外的 \texttt{return} 语句)。
+
+\begin{JavaScript}
+let double = x => 2 * x;
+\end{JavaScript}
+
+箭头函数虽然语法简洁，但也有很多场合不适合。箭头函数不能使用 \texttt{arguments , super} 和 \texttt{new.target}，也不能用作构造函数。此外，箭头函数也没有 \texttt{prototype} 属性。
+
+\subsection{函数名}
+
+因为函数名是指向函数的指针，所以它们跟其他包含对象指针的变量具有相同行为。这意味着一个函数可以拥有多个名称。
+
+ECMAScript6 的所有函数对象都会暴露一个和只读的 \texttt{name} 属性，其中包含关于函数的信息。多数情况下，这个属性保存的就是一个函数标识符，或者说是一个字符串化的变量名。如果它是使用 \texttt{Function} 构造函数创建的，则会标识为 ``anonymous''。
+
+\begin{JavaScript}
+function foo() {}
+let bar = function() {};
+let baz = () => {};
+
+console.log(foo.name);      // foo
+console.log(bar.name);      // bar
+console.log(baz.name);      // baz
+console.log(() => {}.name);      // 空字符串
+console.log((new Function()).name);      // anonymous
+\end{JavaScript}
+
+如果一个函数是获取函数，设置函数，或者使用 \texttt{bind()} 实例化，那么标识符前面会加上一个前缀\footnote{后文会详细说明}。
+
+\subsection{理解函数}
+
+ECMAScript 的函数去其他大多数语言不同，它既不关心参数的类型也不关心参数的个数，甚至传入参数的个数可以超过定义函数时参数的个数。
+
+之所以会这样，是因为 ECMAScript 函数的参数在内部表现为一个数数组。函数被调用时总会接收一个数组，但函数并不关系这个数组中有什么(甚至什么都没有)。
+
+事实上，在使用 \texttt{function} 关键字定义(非箭头)函数时，可以在函数内部访问 \texttt{arguments} 对象，从中取得传进来的每个参数值。我们可以通过中括号语法访问 \texttt{arguments} 对象中的元素(第一个是 \texttt{arguments[0]})。而要确定传进来多少个参数，可以访问 \texttt{arguments.length} 属性。
+
+\begin{JavaScript}
+function sayHi(name, message) {
+    console.log("Hello" + name + "," + message);
+    }
+    
+// 等价写法
+function sayHi() {
+    console.log("Hello" + arguments[0] + "," + arguments[1]);
+}
+\end{JavaScript}
+
+上面例子表明，ECMAScript 函数的参数只是为了方便才写出来的，并不是必须写出来。与此同时，ECMAScript 中的命名参数不会创建让之后的调用必须匹配的函数签名。这是因为根本不存在验证命名参数的机制。
+

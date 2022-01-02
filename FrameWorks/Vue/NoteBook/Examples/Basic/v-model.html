@@ -1,0 +1,28 @@
+<!-- v-model 标签 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>v-model</title>
+  </head>
+  <body>
+    <div id="app">
+      <input type="text" v-model="message" @keyup.enter="getM" />
+      <h2>{{message}}</h2>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+          message: "小鸡炖蘑菇",
+        },
+        methods: {
+          getM: function () {
+            alert(this.message);
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

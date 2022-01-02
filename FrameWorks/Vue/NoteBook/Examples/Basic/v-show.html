@@ -1,0 +1,31 @@
+<!-- v-show 标签 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>v-show</title>
+  </head>
+  <body>
+    <div id="app">
+      <input type="button" value="切换显示状态" @click="changeIsShow" />
+      <img
+        v-show="isShow"
+        src="https://github.githubassets.com/images/icons/emoji/octocat.png"
+      />
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+          isShow: false,
+        },
+        methods: {
+          changeIsShow: function () {
+            this.isShow = !this.isShow;
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

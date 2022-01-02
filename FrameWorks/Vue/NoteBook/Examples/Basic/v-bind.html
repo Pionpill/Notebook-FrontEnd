@@ -1,0 +1,26 @@
+<!-- v-bind 标签 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>v-bind</title>
+  </head>
+  <body>
+    <div id="app">
+      <img
+        src="https://github.githubassets.com/images/icons/emoji/octocat.png"
+        :title="imgTitle"
+      />
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+          imgSrc = "https://github.githubassets.com/images/icons/emoji/octocat.png",
+          imgTitle = "小鸡炖蘑菇",
+        },
+      });
+    </script>
+  </body>
+</html>
