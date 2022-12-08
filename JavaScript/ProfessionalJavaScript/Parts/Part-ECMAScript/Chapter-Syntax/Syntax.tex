@@ -1,0 +1,439 @@
+\section{语言基础}
+\subsection{语法}
+
+ECMAScript 语言很大程度上借鉴了 C 语言，作为 C 语言系中的一门，它和 Java 与许多相似之处，比如区分大小写。
+
+\subsubsection*{标识符}
+
+JavaScript 对标识符组成规定如下：
+\begin{itemize}
+    \item 第一个字符必须是一个字母，下划线(\_)或美元符号(\$)。
+    \item 剩下的字符可以是字母，数字，下划线(\_)或美元符号(\$)。
+\end{itemize}
+
+标识符中的字符是可扩展的 ASCII 中的字母，也可以是 Unicode 的字母字符，但不建议使用 Unicode 字符。
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{advise}
+            下划线(\_)和美元符号(\$)往往有特殊作用，不建议在自己命名的变量中使用。
+        \end{advise}
+    }
+}
+
+ECMAScript 标识符使用驼峰大小写形式。
+
+\subsubsection*{注释}
+ECMAScript 采用 C 语言风格的注释。
+\begin{itemize}
+    \item 单行注释:
+    
+    \begin{JavaScript}
+    // 当行注释
+    \end{JavaScript}
+    \item 多行注释(块注释):
+    \begin{JavaScript}
+    /*多行
+    注释*/
+    \end{JavaScript}
+\end{itemize}
+
+\subsubsection*{严格模式}
+
+ES5 增加了严格模式，用于处理之前版本(ES3)的一些不规范书写问题。启用严格模式需要在脚本头部加上这一行：
+
+\begin{JavaScript}
+"use strict"
+\end{JavaScript}
+
+也可以单独在一个函数中执行严格模式:
+
+\begin{JavaScript}
+function doSomething() {
+    "use strict";
+    // 函数体
+}
+\end{JavaScript}
+
+严格模式会影响到 JavaScript 执行的方方面面，后文会经常出现这个概念。所有现代浏览器都支持严格模式。
+
+\subsubsection*{语句}
+
+ECMAScript 中的语句和 Java 几乎一样。他理论上有几种宽松的写法，但并不推荐这样用。
+
+\begin{itemize}
+    \item ECMAScript 允许省略分号\footnote{可能影响性能。同时降低可读性。}。
+    \item 单条控制语句可以省略括号\footnote{影响不大，但建议保留。}。
+\end{itemize}
+
+\subsection{关键字与保留字}
+
+JavaScript 有很多关键字，关键字不能用作标识符或属性名，具体的关键字视 ES 版本而定，这里不一一列举\footnote{参考文章：\url{https://zhuanlan.zhihu.com/p/257105802}}。
+
+此外，规范中还有一些未来的保留字，同样不能作为标识符或属性名使用。这些保留字多是其他语言中的关键字，有一定其他语言基础的人一般都不会用到。
+
+\subsection{变量}
+
+ECMAScript 变量视松散类型，意思是变量可以用于保存任何类型的数据。共有3个关键字可以声明变量： \texttt{var, let, const}。其中 \texttt{let, const} 只有在 ES6 级之后的版本才可以使用。
+
+\subsubsection{\texttt{var} 关键字}
+
+\texttt{var} 关键字是最原始的声明变量关键字。用法如下：
+
+\begin{JavaScript}
+var message = "hi";
+\end{JavaScript}
+
+如果没有赋值，仅声明变量，变量会保存一个特殊值 \texttt{undefined}\footnote{下一节讨论。}。这里 \texttt{message} 被定义为一个保存字符串值的变量，但这样初始化变量不会将它标识为字符串类型，只是一个简单的赋值而已。
+
+此外，虽然 ECMAScript 允许变量重新赋值，但是并不推荐这样使用。
+
+\noindent\textbf{\texttt{var} 声明作用域}
+
+使用 \texttt{var} 操作符定义的变量会成为包含它的函数的局部变量。在函数外是不起作用的。
+
+\begin{JavaScript}
+function test() {
+    var message = "hi";
+}
+console.log(message)    // 出错！
+\end{JavaScript}
+
+如果我们需要在函数创建一个全局变量，只需要省略 \texttt{var} 关键字。
+
+\begin{JavaScript}
+function test() {
+    message = "hi";
+}
+console.log(message)    // 正确
+\end{JavaScript}
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{warning}
+            虽然省略 \texttt{var} 操作符可以定义全局变量，但是不建议这么做。绝大多数面向对象的高级语言也不建议这么做。
+        \end{warning}
+    }
+}
+
+如果要定义多个变量，可以在一条语句中用逗号分隔各个变量\footnote{这种做法也不建议使用。}。
+
+\noindent\textbf{\texttt{var} 声明提升}
+
+下面 JavaScript 代码不会报错。这是因为使用 \texttt{var} 关键字声明的变量会自动提升到函数作用域顶部:
+
+\begin{JavaScript}
+function foo() {
+    console.log(age);
+    var age = 26;
+}
+\end{JavaScript}
+
+上述代码等价于：
+
+\begin{JavaScript}
+function foo() {
+    var age;
+    console.log(age);
+    age = 26;
+}   
+\end{JavaScript}
+
+这就是所谓的 "提升"(hoist)，也就是把所有变量声明都拉到函数作用域的顶部。此外，反复多次使用 \texttt{var} 声明同一个变量也没有问题。
+
+\begin{JavaScript}
+function foo() {
+    var age = 16;
+    var age = 26;
+    var age = 36;
+    console.log(age);
+}
+\end{JavaScript}
+
+\subsubsection{\texttt{let} 声明}
+
+\texttt{let} 和 \texttt{var} 作用差不多， 设计 \texttt{let} 就是为了在大部分情况下取代 \texttt{var}。它们最明显的区别是， \texttt{let} 声明的范围是块作用域，而 \texttt{var} 是函数作用域。\texttt{let} 更符合一般高级语言的语法逻辑。
+
+\begin{JavaScript}
+if (true) {
+    var name = 'Matt';
+    console.log(name);
+}
+console.log(name);  // 正确
+\end{JavaScript}
+
+\begin{JavaScript}
+if (true) {
+    let name = 'Matt';
+    console.log(name);
+}
+console.log(name);  // 错误
+\end{JavaScript}
+
+在这里， \texttt{age} 变量 之所以不能在 \texttt{if} 块之外被引用，是因为它的作用域仅限于该块内部。块作用域是函数作用域的子集，因此适用于 \texttt{var} 的作用域同样适用于 \texttt{let}。
+
+\texttt{let} 也不允许同一个块作用域中出现冗余声明。这样会报错：
+
+\begin{JavaScript}
+var name;
+var name;   // 出现两次，无误
+
+let age;
+let age;    // 出现两次，SyntaxError
+\end{JavaScript}
+
+此外，对声明冗余的报错，不会因混用 \texttt{let} 和 \texttt{var} 而受影响。这两个关键字声明的并不是不同类型的变量，它们只是指出变量在相关作用域如何存在。
+
+\noindent\textbf{暂时性死区}
+
+\texttt{let} 和 \texttt{var} 的另一个重要区别是： 使用\texttt{let}声明的变量不会再作用域中被提升。
+
+在解析代码时， JavaScript 引擎会注意到块后面的 \texttt{let} 声明，只不过在此之前不能以任何方式来引用未声明的变量。在 \texttt{let} 声明之前的执行瞬间被称为 ``暂时性死区''，在此阶段引用任何后面才声明的变量都会抛出 \texttt{ReferenceError}。
+
+\noindent\textbf{全局声明}
+
+与 \texttt{var} 关键字不同，使用 \texttt{let} 在全局作用域中声明的变量不会称为 \texttt{windows} 对象的属性( \texttt{var} 声明会 )。
+
+\begin{JavaScript}
+var name = 'Matt';
+console.log(window.name);   // 'Matt'
+
+let age = 26;
+console.log(window.age);    // undefined
+\end{JavaScript}
+
+不过 \texttt{let} 声明仍然是在全局作用域中发生的。相应变量会在页面的生命周期内存续。因此，为了避免 \texttt{SyntaxError}，必须确保页面不会重复声明同一个变量。
+
+\noindent\textbf{条件声明}
+
+在使用 \texttt{var} 声明变量时，由于声明被提升， JavaScript 引擎会自动将多余的声明在作用于顶部合并。因为 \texttt{let} 的作用域是块，所以不可能检查前面是否已经使用 \texttt{let} 声明郭同名变量，同时也就不可能在没有声明的情况下声明它。
+
+\begin{JavaScript}
+<script>
+    var name = 'Pionpill';
+    let age = 22;
+</script>
+
+<script>
+    var name = 'Matt';
+    // 没有问题，同时被作为一个提升声明来处理
+    // 不需要检查之前是否声明过同名变量
+    let age = 23;
+    // age 之前声明过，报错
+</script>
+\end{JavaScript}
+
+使用 \texttt{try/catch} 语句或 \texttt{typeof} 操作符也不能解决，因此条件快中 \texttt{let} 声明的作用域仅限于该块。
+
+\noindent\textbf{\texttt{for} 循环中的 \texttt{let} 声明}
+
+在 \texttt{let} 出现之前， \texttt{for} 循环定义的迭代变量会渗透到循环体外部：
+
+\begin{JavaScript}
+for(var i=0; i<5; i++) {
+    // 循环逻辑
+}
+console.log(i);     // 5
+\end{JavaScript}
+
+改用 \texttt{let} 后就不会出现这个问题：
+
+\begin{JavaScript}
+for(let i=0; i<5; i++) {
+    // 循环逻辑
+}
+console.log(i);     // ReferenceError
+\end{JavaScript}
+
+此外，由于 \texttt{var} 对应的是函数作用域，在 \texttt{for} 循环，\texttt{for-in}，\texttt{for-of} 循环中会出现种种意想不到的问题。
+
+\subsubsection{\texttt{const} 声明}
+
+\texttt{const} 的行为与 \texttt{let} 基本相同，唯一一个重要的区别是它声明的变量必须同时初始化变量，且尝试修改 \texttt{const} 声明的变量会报错。
+
+此外， \texttt{const} 变量不可变本质上是指其引用不可变，并不是引用的对象不可变。
+
+\begin{JavaScript}
+const name = "Pionpill";
+name = "Matt";      // 报错
+
+const person = {};
+person.name = "Matt";   // 正确
+\end{JavaScript}
+
+此外，不能用 \texttt{const} 来声明迭代变量(应为迭代变量会自增)：
+\begin{JavaScript}
+for (const i=0; i<10; i++) {}   // TypeError
+\end{JavaScript}
+
+不过，如果只想用 const 声明一个不会被修改的 \texttt{for} 循环变量，那是可以的。也就是说，每次迭代只是创建一个新变量。这对 \texttt{for-in}，\texttt{for-of} 循环特别有意义：
+
+\begin{JavaScript}
+let i = 0;
+for(const j=7; i<5; ++i) {
+    console.log(j);
+}
+// 7,7,7,7,7
+
+for(const key in {a:1,b:2}) {
+    console.log(key);
+}
+// a,b
+
+for (const value of [1,2,3,4,5]) {
+    console.log(value);
+}
+// 1,2,3,4,5
+\end{JavaScript}
+
+\subsubsection*{如何声明变量}
+
+ES6 加入 \texttt{let} 和 \texttt{const} 关键字，其主要目的就是为了取代 \texttt{var} 关键字。由于 \texttt{var} 声明的变量会出现作用域，升格等问题，它已经在实践中被弃用了。至于为什么还要花大段时间讲 \texttt{var}，自然是为了看得懂一些远古代码。
+
+至于 \texttt{const} 关键字，由于浏览器会保持它不变，无论是静态分析还是处理效率上，都要优于 \texttt{let}。当然，使用最多的还是 \texttt{let} 关键字。
+
+总而言之，\textbf{不要使用 \texttt{var}，优先使用 \texttt{const}， \texttt{let} 次之。}
+
+\subsection{操作符}
+
+JavaScript 中的基本操作符和 C 语言系中的操作符运算是相同的，相同内容省略。此外，和 Python 一样，JavaScript 是一门十分灵活的语言，比如 \texttt{false == 0} 会返回 \texttt{true}，这种数据类型转换在操作符运算中时常会出现。限于操作符类型太多，涉及数据类型转换的操作更多，所以不一一说明，如果遇到问题，读者可通过 node.js 自行检查。
+
+\noindent\textbf{递增递减操作符}
+
+和 C/Java 语言中一样的内容省略。这个操作符往往会降低可读性，不建议使用，Python 就完全抛弃了。
+
+ECMA 中的递增递减操作符除了对数值类型起作用，其他类型也起作用:
+\begin{itemize}
+    \item 字符串，如果是有效的数值形式，则转换为数值进行计算，变量类型由此变成数值类型。
+    \item 字符串，如果不是有效的数值形式，则转换为 \texttt{NaN}，变量类型由此变成数值类型。
+    \item 布尔型，变成对应的 0/1 再进行计算，变量类型变成数值。
+    \item 浮点数，加1或减1。
+    \item 对象，调用 \texttt{valueOf()} 方法取得可以操作的值。对得到的值采用上述规则。如果是 \texttt{NaN}，调用 \texttt{toString()} 并再次应用其他规则。变量类型变成数值类型。
+\end{itemize}
+
+\noindent\textbf{指数操作符}
+
+ES7 新增了指数操作符，其语法和 Python 中的指数操作符相同。
+
+\begin{JavaScript}
+console.log(Math.pow(3,2));     // 9
+cnosole.log(3**2);              // 9
+\end{JavaScript}
+
+不止如此，ECMA还提供了指数赋值操作符 \texttt{**+}:
+
+\begin{JavaScript}
+let a = 3;
+a **= 2;
+console.log(a);     // 9
+\end{JavaScript}
+
+\noindent\textbf{全等于运算}
+
+ECMA 中的相等(\texttt{==})符号默认会转换操作数，而全等(\texttt{===})符号则不会。
+
+\begin{JavaScript}
+console.log("55" == 55);    // true
+console.log("55" === 55);   // false
+\end{JavaScript}
+
+与全等对应的还有不全等 (\texttt{!==}) 运算。
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{advise}
+            多数情况下，由于等于运算涉及类型转换问题，更推荐使用全等运算，这有助于保持数据类型的完整性。
+        \end{advise}
+    }
+}
+
+\subsection{语句}
+
+省略 \texttt{if，while，for} 语句的介绍。
+
+\subsubsection{\texttt{for-in} 语句}
+
+\texttt{for-in} 语句是一种严格的迭代语句，用于枚举对象中的非符号键属性，语法如下:
+
+\begin{JavaScript}
+for (property in expression) statement
+\end{JavaScript}
+
+下面是一个例子:
+
+\begin{JavaScript}
+for (const propName in window) {
+    document.write(propName);
+}
+\end{JavaScript}
+
+这个例子使用 \texttt{for-in} 循环显示了 BOM 对象 \texttt{window} 的所有属性。这里控制语句中的 \texttt{const} 不是必须的，不过为了确保局部变量不被修改，推荐使用 \texttt{const}。
+
+值得说明的是，ECMAScript 中对象的属性是无序的。
+
+\subsubsection{\texttt{for-of} 语句}
+
+\texttt{for-of} 语句是一种严格的迭代语句，用遍历可迭代对象的元素，语法如下:
+
+\begin{JavaScript}
+for (property of expression) statement
+\end{JavaScript}
+
+下面是示例:
+
+\begin{JavaScript}
+for (const el of [2,4,6,8]) {
+    document.write(el);
+}
+\end{JavaScript}
+
+\subsubsection{标签语句}
+
+标签语句用于给语句加标签，语法如下:
+\begin{JavaScript}
+label: statement
+\end{JavaScript}
+下面是一个例子:
+\begin{JavaScript}
+start: for(lei i=0; i<count; i++) {
+    console.log(i);
+}
+\end{JavaScript}
+
+这个语句中的 \texttt{start} 是一个标签，可以在后面通过 \texttt{break} 或 \texttt{continue} 语句引用。标签语句的典型应用场景是嵌套循环。
+
+\subsubsection{\texttt{with} 语句}
+
+\texttt{with} 语句的用途是将代码作用域设置为特定的对象，其语法是:
+
+\begin{JavaScript}
+with (expression) statement;
+\end{JavaScript}
+
+使用 \texttt{with} 语句的主要场景是针对一个对象反复操作，这时候将代码作用域设置为该对象能提供便利。
+
+\begin{JavaScript}
+// 不使用 with 语句
+let qs = location.search.substring(1);
+let hostname = location.hostname;
+let url = location.href;
+
+// 使用 with 语句
+with(location) {
+    let qs = search.substring(1);
+    let hostName = hostname;
+    let url = href;
+}
+\end{JavaScript}
+
+在 \texttt{with} 语句中，每个变量会首先被认为是一个局部变量。如果没有找到局部变量，则会搜索 \texttt{location} 对象，看它是否有同名属性。
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{advise}
+            严格模式下不允许使用 \texttt{with} 语句，由于 \texttt{with} 语句影响性能且难于调试，所以不建议使用。
+        \end{advise}
+    }
+}
+
+\newpage

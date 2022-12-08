@@ -1,0 +1,282 @@
+\section{基本引用类型}
+
+在 ECMAScript 中并没有类的概念，只有引用类型。从技术上将 JavaScript 是一门 OOP 语言，但是 ECMAScript 确实类，接口这些结构。引用类型有时候也被称为对象定义，因为它们描述了自己的对象应有的属性和方法。
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{notice}
+            引用类型封装了很多方法，除了特别重要的一概省略。
+        \end{notice}
+    }
+}
+
+\subsection{\texttt{Object}}
+
+ES 中的对象其实就是一组数据和功能的集合。对象通过 \texttt{new} 操作符后跟对象类型的名称来创建。开发者可以通过创建 \texttt{Object} 类型的实例来创建自己的对象，然后再给对象添加属性和方法。
+
+\begin{JavaScript}
+let o = new Object();
+let p = new Object;     // 可行，但不推荐
+\end{JavaScript}
+
+类似 Java 中的 \texttt{java.lang.Object} ES 中的 \texttt{Object} 也是派生其他对象的基类。 \texttt{Object} 类型的所有属性和方法在派生的对象上同样存在，每个 \texttt{Object} 属性都有如下属性和方法:
+
+\begin{itemize}
+    \item \texttt{constructor}: 用于创建当前对象的函数。在前面例子中值是 \texttt{Object()} 函数。
+    \item \texttt{hasOwnProperty(propertyName)}: 用于判断当前对象实例上是否存在给定的属性。要检查的属性名必须是字符串或符号。
+    \item \texttt{isPrototypeOf(object)}: 用于判断当前对象是否为另一个对象的原型。
+    \item \texttt{propertyIsEnumerable(propertyName)}: 用于判断给定的属性是否可以使用 \texttt{for-in} 语句枚举，属性名必须是字符串。
+    \item \texttt{toLocalString()}: 返回对象的字符串标识，该字符串反映对象所在的本地化执行环境。
+    \item \texttt{toString()}: 返回对象的字符串表示。
+    \item \texttt{valueOf()}: 返回对象对应的字符串，数值或布尔值表示，通常与 \texttt{toString()} 的返回值相同。
+\end{itemize}
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{notice}
+            严格来讲，ECMA 中的对象行为不一定适合 JavaScript 中的其他对象，因为还有 BOM，DOM 对象。所以并不是所有对象都继承自 Object 对象。
+        \end{notice}
+    }
+}
+
+创建 Object 对象有两种方式:
+\begin{itemize}
+    \item 使用 \texttt{new} 操作符和 \texttt{Object} 构造函数。
+
+\begin{JavaScript}
+let person = new Object(); 
+person.name = "Nicholas"; 
+person.age = 29; 
+\end{JavaScript}
+
+    \item 使用对象字面量，直观方便。
+    
+\begin{JavaScript}
+let person = {    
+    name: "Nicholas",   
+    age: 29 
+}; 
+\end{JavaScript}
+\end{itemize}
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{notice}
+在使用对象字面量表示法定义对象时，并不会实际调用 \texttt{Object} 构造函数。
+        \end{notice}
+    }
+}
+
+为对象添加属性时，也可以使用数字等其他形式作为属性名，但最后都会转换为字符串。除了通过点访问属性，也可以通过中括号访问属性:
+
+\begin{JavaScript}
+person.name = "Pionpill";
+person["name"] = "Pionpill";
+\end{JavaScript}
+
+
+\subsection{\texttt{Date}}
+
+要创建日期对象，就使用new操作符来调用Date构造函数：
+
+\begin{JavaScript}
+let now = new Date();
+\end{JavaScript}
+
+不带参数的 \texttt{Date()} 将获取当前的时间，开发者可以根据其他构造函数创建对应的日期。
+
+\texttt{Date.parse()} 方法接收一个表示日期的字符串参数，尝试将这个字符串转换为表示该日期的毫秒数(可以作为 \texttt{Date()} 的参数)。ECMA 提供的几种日期格式如下:
+\begin{itemize}
+    \item 月/日/年: 5/23/2019
+    \item 月名 日, 年: May 23, 2019
+    \item 周名 月名 日 年 时:分:秒 时区: Tue May 23 2019 00:00:00 GMT-0700
+    \item YYYY-MM-DDTHH:mm:ss.sssZ: 2019-05-23T00:00:00
+\end{itemize}
+
+\begin{JavaScript}
+let someDate = new Date(Date.parse("May 23, 2019"));
+let someDate = new Date("May 23, 2019");    // 语法糖: 直接传入字符串，Date() 会隐式调用 Date.parse()
+\end{JavaScript}
+
+\texttt{Date.UTC()} 也可以返回日期的毫秒表示，但传入的参数是字符串:
+
+\begin{JavaScript}
+let allFives = new Date(2005, 4, 5, 17, 55, 55);  // 语法糖: 隐式调用  Date.UTC()
+\end{JavaScript}
+
+\texttt{Date} 重写了 \texttt{Object} 的几个重要的方法:
+\begin{itemize}
+    \item \texttt{toLocalString()} : 返回浏览器运行的本地环境一致的时间日期。
+    \item \texttt{toString()}: 返回带时区信息的日期时间(上面的加强版)。
+    \item \texttt{valueOf()}: 返回时间的毫秒表示，自世界协调时间起(1970年1月1日零时)。
+\end{itemize}
+
+\subsection{RegExp}
+
+ECMAScript通过RegExp类型支持正则表达式。
+
+\begin{JavaScript}
+let expression = /pattern/flags;
+\end{JavaScript}
+
+这里包含两部分:
+\begin{itemize}
+    \item \textbf{pattern}: pattern（模式）可以是任何简单或复杂的正则表达式，包括字符类、限定符、分组、向前查找和反向引用。
+    \item \textbf{flags}: 每个正则表达式可以带零个或多个flags（标记），用于控制正则表达式的行为。
+\end{itemize}
+
+表示匹配模式的标记如下:
+\begin{itemize}
+    \item g: 全局模式，找所有，而不是找第一个就停止。
+    \item i: 不区分大小写。
+    \item m: 多行模式，查找到第一行文本末尾继续查找。
+    \item y: 黏附模式，只查找从 lastIndex 开始及之后的字符串。
+    \item u: Unicode 模式。
+    \item s: dotAll 模式，表示元字符，匹配任何字符(换行等)。
+\end{itemize}
+
+此外，元字符必须使用斜杠转义。
+
+\begin{JavaScript}
+// 匹配所有 "at"
+let pattern1 = /at/g;
+// 匹配第一个 "bat" 或 "cat"
+let pattern2 = /[bc]at/i;
+// 匹配第一个"[bc]at"，忽略大小写
+let pattern2 = /\[bc\]at/i; 
+\end{JavaScript}
+
+上述写法是一种语法糖，也可以使用构造函数:
+
+\begin{JavaScript}
+// 效果相同
+let pattern1 = /[bc]at/i; 
+let pattern2 = new RegExp("[bc]at", "i");
+\end{JavaScript}
+
+在构造函数中，元字符必须经过两次转义:
+
+\begin{JavaScript}
+const re1 = /cat/g; 
+console.log(re1);  // "/cat/g" 
+\end{JavaScript}
+
+\subsection{包装类型}
+
+为了方便操作原始值，ECMAScript 提供了 3 中特殊的引用类型: Boolean, Number, String。
+
+我们看这样一个例子:
+\begin{JavaScript}
+let s1 = "some text";
+let s2 = s1.substring(2);
+\end{JavaScript}
+
+理论上，作为简单类型的 String 是没有方法的。那为什么会这样呢，语法糖！实际上在浏览器引擎中，涉及到 String 的代码会被这样执行:
+\begin{itemize}
+    \item 创建一个 String 引用类型的实例；
+    \item 调用实例上的特定方法；
+    \item 销毁实例。
+\end{itemize}
+
+这种行为可以让原始值拥有对象的行为。对布尔值和数值而言，以上3步也会在后台发生，只不过使用的是 Boolean 和 Number 包装类型而已。
+
+引用类型与原始值包装类型的主要区别在于对象的生命周期。在通过new实例化引用类型后，得到的实例会在离开作用域时被销毁，而自动创建的原始值包装对象则只存在于访问它的那行代码执行期间。这意味着不能在运行时给原始值添加属性和方法。
+
+\begin{JavaScript}
+let s1 = "some text"; 
+s1.color = "red"; 
+console.log(s1.color);  // undefined 
+\end{JavaScript}
+
+Object构造函数作为一个工厂方法，能够根据传入值的类型返回相应原始值包装类型的实例：
+
+\begin{JavaScript}
+let obj = new Object("some text"); 
+console.log(obj instanceof String);  // true 
+\end{JavaScript}
+
+注意，强制类型转换和new调用构造函数创建的东西是不一样的，虽然函数名一样:
+
+\begin{JavaScript}
+let value = "25"; 
+let number = Number(value);    // 转型函数
+console.log(typeof number);    // "number" 
+let obj = new Number(value);   // 构造函数
+console.log(typeof obj);       // "object"
+\end{JavaScript}
+
+\subsection{单例内置对象}
+
+ECMA-262对内置对象的定义是“任何由ECMAScript实现提供、与宿主环境无关，并在ECMAScript程序开始执行时就存在的对象”。这就意味着，开发者不用显式地实例化内置对象，因为它们已经实例化好了。包括Object、Array和String。另外还有两个不明显的单例内置对象：Global和Math。
+
+\subsubsection{\texttt{Global}}
+
+\texttt{Global}对象是ECMAScript中最特别的对象，因为代码不会显式地访问它。ECMA-262规定\texttt{Global}对象为一种兜底对象，它所针对的是不属于任何对象的属性和方法。事实上，不存在全局变量或全局函数这种东西。在全局作用域中定义的变量和函数都会变成\texttt{Global}对象的属性。本书前面介绍的函数，包括\texttt{isNaN()、isFinite()、parseInt()和parseFloat()}，实际上都是\texttt{Global}对象的方法。
+
+\noindent\textbf{URL 编码方式}
+
+ECMAScript 提供了两个对 URI 编码的方法:
+\begin{JavaScript}
+let uri = "http://www.wrox.com/illegal value.js#start"; 
+// "http://www.wrox.com/illegal%20value.js#start"
+console.log(encodeURI(uri)); 
+// "http%3A%2F%2Fwww.wrox.com%2Fillegal%20value.js%23start" 
+console.log(encodeURIComponent(uri)); 
+\end{JavaScript}
+
+同时也提供对应的解码方法:
+\begin{JavaScript}
+let uri = "http%3A%2F%2Fwww.wrox.com%2Fillegal%20value.js%23start"; 
+// http%3A%2F%2Fwww.wrox.com%2Fillegal value.js%23start 
+console.log(decodeURI(uri)); 
+// http:// www.wrox.com/illegal value.js#start 
+console.log(decodeURIComponent(uri)); 
+\end{JavaScript}
+
+\noindent\textbf{\texttt{eval()} 方法}
+
+\texttt{eval()} 这个方法就是一个完整的ECMAScript解释器，它接收一个参数，即一个要执行的ECMAScript字符串：
+\begin{JavaScript}
+eval("console.log('hi')");
+console.log('hi');
+\end{JavaScript}
+
+当解释器发现\texttt{eval()}调用时，会将参数解释为实际的ECMAScript语句，然后将其插入到该位置。
+
+在非严格模式下，通过 \texttt{eval()} 执行语句与没有 \texttt{eval()} 效果相同。在非严格模式下 \texttt{eval()} 内部创建的变量和函数无法被外部访问。
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{notice}
+            \texttt{eval()} 方法很危险，了解即可，一般不要使用。
+        \end{notice}
+    }
+}
+
+\noindent\textbf{\texttt{Global} 对象属性}
+
+\texttt{Global} 对象有很多属性，所有无需通过对象调用的属性都是 \texttt{Global} 对象属性，包括以下类型:
+\begin{itemize}
+    \item 特殊值: undefined, NaN, Infinity
+    \item 构造函数: Object, Array, Function, Boolean, String, Number, Date, RegExp, Symbol
+    \item 错误类型构造函数: Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError
+\end{itemize}
+
+\noindent\textbf{\texttt{window} 对象}
+
+虽然 ECMA-262 没有规定直接访问 \texttt{Global} 对象的方式，但浏览器将 \texttt{window} 对象实现为 \texttt{Global} 对象的代理。因此，所有全局作用域中声明的变量和函数都变成了window的属性。
+
+\begin{JavaScript}
+var color = "red"; 
+function sayColor() {   
+    console.log(window.color);
+    return this;   // this 表示 Global 对象 
+} 
+window.sayColor(); // "red" 
+\end{JavaScript}
+
+\subsubsection{\texttt{Math}}
+
+ECMAScript提供了 \texttt{Math} 对象作为保存数学公式、信息和计算的地方。\texttt{Math}对象提供了一些辅助计算的属性和方法。略...
+
+\newpage

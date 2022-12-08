@@ -15,41 +15,29 @@
 
 \noindent\textbf{前言：}
 
-笔者为软件工程系在校本科生，主要用 JavaScript 做一些前端项目。本文默认读者知道计算机基础知识(二进制，补码，异或运算，控制流程)，也默认有其他 C 语言系语言(Java，Python，C++...)的基础(也就是说本文不适合完全无基础的读者。)，JavaScript 和 Java 语言语法有诸多相似之处，这些相似的基础语言不再说明。
+笔者为软件工程系在校本科生，主要用 JavaScript 做一些前端项目。本文默认读者有一定的编程基础(至少会一门C语言系语言)，基础语法不再说明。
 
-<<JavaScript 高级程序设计>> 是 JavaScript 学习的一本入门及进阶书，原书中文版多达117万字，笔者将其分为三个部分：
+<<JavaScript 高级程序设计>> 是 JavaScript 学习的一本入门及进阶书，原书中文版多达117万字，笔者将其分为如下几个部分：
 \begin{itemize}
-    \item ECMAScript：数据结构，分支语句，函数，面向对象等基础知识
-    \item DOM 与 BOM：与网页相关的内容
-    \item JavaScript 前沿：新特性与技术。
+    \item ECMAScript：介绍ECMAScript的语法。
+    \item TypeScript: 介绍TypeScript的语法。 
+    \item DOM 与 BOM：与 Web 开发相关的内容。
+    \item API：处理各类事务文件的接口。
 \end{itemize}
 
-本人并不是很喜欢原书的书写顺序，基础知识与高阶内容往往混在一起。因此，本人对文章结构做了一定修改。
+本笔记不能代替原书，仅是对原书的一个总结归纳，笔记上只有知识点的总结，并没有详细的理解性语句，如有需要，还请购买原书。本文引用了一些 CSDN 或其他论讨的文章，有标注来源，如果原作者觉得不合适，请联系本人。
 
-本笔记不能代替原书，仅是对原书的一个总结归纳，笔记上只有知识点的总结，并没有详细的理解性语句，如有需要，还请购买原书。本文所在Github仓库采用 GPL v3 协议，但请勿将本文商业使用，本文引用了一些 CSDN 或其他论讨的文章，如果原作者觉得不合适，请联系本人。
-
-此外，关于 Web 开发，避不开又令所有技术员头疼的是各种历史遗留问题，以及不同浏览器兼容问。，由于笔者仅为一名大三学生，预计读完研究生后才会真正工程性地利用这些技术\footnote{希望到时候没这些问题}。所以对于这些历史与兼容问题，除非特别重要，笔记中不再详述。这些问题包括：
-\begin{itemize}
-    \item IE 浏览器适配
-    
-    微软已经改用 Chrome 核心的 Edge 浏览器了，本文直接屏蔽 IE 浏览器。
-    \item W3C 规则
-    
-    早期 JS 发展并没有统一的标准，这段时间造成的历史问题。
-    \item 淘汰技术
-    
-    部分已被淘汰(正在淘汰)的技术，比如 XHTML，CSS标签的部分不常用属性。
-\end{itemize}
+关于 Web 开发，不得不考虑浏览器兼容问题，令人欣慰的是，微软已经弃用 IE 浏览器，改用 chromium 核心的 Edge 浏览器，本文以 Chrome 浏览器为准，不再考虑任何IE(或其他浏览器)适配问题。
 
 本人的编写及开发环境如下：
 \begin{itemize}
-    \item IDE: VSCode 1.62
+    \item IDE: VSCode 1.72 
     \item Chrome: 91.0
-    \item Node.js: 14.16
-    \item Window10: 10.0.19042
+    \item Node.js: 18.12
+    \item OS: Window11
 \end{itemize}
 
-此外，JavaScript 是一门语法十分宽松的语言，其语法在某些方面甚至比 Python 都要自由，但考虑到可读性，笔记中只强调推荐的写法，至于一些可行但不推荐的写法，仅提示。相信读者都有其他高级语言基础，一些基本准则也只提出，不说明具体原因。
+此外，JavaScript 是一门语法十分宽松的语言，同一种实现有非常多的写法，笔记中只强调推荐的写法，更多写法请读者用用现代编辑器代码提示功能查询。
 
 \date{\today}
 \newpage
@@ -61,12 +49,18 @@
 \setcounter{page}{1} 
 \pagestyle{fancy}
 
-
-\import{Parts/Part-1/Chapter-1}{Section-1.tex}
-\import{Parts/Part-1/Chapter-1}{Section-2.tex}
-\import{Parts/Part-1/Chapter-2}{Section-3.tex}
-\import{Parts/Part-1/Chapter-2}{Section-4.tex}
-\import{Parts/Part-1/Chapter-2}{Section-5.tex}
+\part{ECMAScript}
+\chapter{基础语法}
+\import{Parts/Part-ECMAScript/Chapter-Syntax}{Introduction.tex}
+\import{Parts/Part-ECMAScript/Chapter-Syntax}{Syntax.tex}
+\import{Parts/Part-ECMAScript/Chapter-Syntax}{Variable.tex}
+\chapter{数据类型}
+\import{Parts/Part-ECMAScript/Chapter-Type}{Simple.tex}
+\import{Parts/Part-ECMAScript/Chapter-Type}{Reference.tex}
+\import{Parts/Part-ECMAScript/Chapter-Type}{Collection.tex}
+\chapter{函数}
+\import{Parts/Part-ECMAScript/Chapter-Function}{Function.tex}
+\import{Parts/Part-ECMAScript/Chapter-Function}{Iterator.tex}
 
 
 \end{document}

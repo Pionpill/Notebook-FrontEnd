@@ -1,0 +1,188 @@
+\section{集合引用类型}
+\subsection{\texttt{Array} 数组}
+
+数组是最常见的数据结构，ECMAScript 的数组比其他语言有几个不同:
+\begin{itemize}
+    \item ECMAScript 的数组是对象。
+    \item 数组每个槽位可以存储不同的值。
+    \item 数组会动态扩容。
+\end{itemize}
+
+\subsubsection{数组表现}
+
+创建数组的方式非常多:
+
+\begin{JavaScript}
+// new 创建空数组
+let colors = new Array();
+// new 创建指定大小的数组
+let colors = new Array(3);
+// new 创建指定元素的数组
+let colors = new Array("red", "blue", "yellow");
+// 字面量创建数组
+let colors = ["red", "blue", "yellow"];
+// 字面量创建有空位的数组, 空位被视作 undefined
+let colors = ["red",,,,,"blue"];
+\end{JavaScript}
+
+此外，ES6 还提供了两个创建数组的静态方法: \texttt{from()} 与 \texttt{of()}。\texttt{from()}用于将类数组结构转换为数组实例，而\texttt{of()}用于将一组参数转换为数组实例，请读者自行尝试这两个方法。
+
+
+\noindent\textbf{\texttt{isArray()}} 
+
+同一个上下文中可以使用 \texttt{instanceof} 判断数组，但是不同上下文会有不同版本的 Array 构造函数，导致 \texttt{instanceof} 判断失败，这时候可以使用静态方法 \texttt{isArray()}
+
+\begin{JavaScript}
+if (Array.isArray(value)) {
+    ......
+}
+\end{JavaScript}
+
+\subsubsection{数组作为映射，栈，队列}
+
+ECMAScript 的 Array 有如下方法，不得不怀疑 Array 到底是如何实现的:
+\begin{JavaScript}
+const a = ["foo", "bar", "baz", "qux"]; // 因为这些方法都返回迭代器，所以可以将它们的内容
+// 通过Array.from()直接转换为数组实例
+const aKeys = Array.from(a.keys());         // [0, 1, 2, 3]
+const aValues = Array.from(a.values());     // ["foo", "bar", "baz", "qux"]
+const aEntries = Array.from(a.entries());   // [[0, "foo"], [1, "bar"], [2, "baz"], [3, "qux"]] 
+\end{JavaScript}
+
+因此，可以这样写:
+
+\begin{JavaScript}
+const a = ["foo", "bar", "baz", "qux"]; 
+for (const [idx, element]of a.entries()) {
+    alert(idx);
+    alert(element);
+}
+\end{JavaScript}
+
+此外，数组还可以像栈，队列一样操作，ECMAScript 提供了对应的方法。
+
+\begin{JavaScript}
+// 栈操作
+let colors = new Array();   // 创建一个数组
+let count = colors.push("red", "green");  // 压入两项
+let item = colors.pop();       // 弹出一项
+// 队列操作
+let item = colors.shift();  // 取得最后一项
+\end{JavaScript}
+
+\subsubsection{谓词，迭代与归并}
+
+谓词(predicate)可以看作对数据的筛选，数组中的 \texttt{find()} 与 \texttt{findIndex()} 都可以使用谓词筛选数据。
+
+\begin{JavaScript}
+const people = [
+    {
+        name: "Matt",     
+        age: 27   
+    },   
+    {     
+        name: "Nicholas",     
+        age: 29   
+    } 
+]; 
+alert(people.find((element, index, array) => element.age < 28)); 
+// {name: "Matt", age: 27} 
+alert(people.findIndex((element, index, array) => element.age < 28)); 
+// 0
+\end{JavaScript}
+
+ECMAScript 为数组定义了 5 个迭代方式:
+\begin{itemize}
+    \item \texttt{every()}: 对数组每一项都运行传入的函数，如果每一项函数都返回 \texttt{true}，这个方法返回 \texttt{true}。
+    \item \texttt{some()}: 对数组每一项都运行传入的函数，如果有一项函数返回\texttt{true}，则这个方法返回\texttt{true}。这些方法都不改变调用它们的数组。
+    \item \texttt{filter()}: 对数组每一项都运行传入的函数，函数返回 \texttt{true} 的项会组成数组之后返回。
+    \item \texttt{forEach()}: 对数组每一项都运行传入的函数，没有返回值。
+    \item \texttt{map()}: 对数组每一项都运行传入的函数，返回由每次函数调用的结果构成的数组。
+\end{itemize}
+
+ECMAScript为数组提供了两个归并方法：\texttt{reduce()}和\texttt{reduceRight()}。这两个方法都会迭代数组的所有项，并在此基础上构建一个最终返回值。
+
+\subsubsection{\texttt{ArrayBuffer}}
+
+定型数组(typed array)更像我们常规认知中的数组，是申请内存后不可变的，引入它的目的是提高性能。如果熟悉其他强类型语言(如Java)，一定会对\texttt{Array}感到不可思议，它能同时作为列表，队列，栈，映射使用，可以存储任意类型；但方便总是有代价的：性能不高。
+
+\texttt{ArrayBuffer} 是所有定型数组及视图引用的基本单位。\texttt{ArrayBuffer()}是可用于在内存中分配特定数量的字节空间。
+
+\begin{JavaScript}
+const buf = new ArrayBuffer(16);  // 在内存中分配16字节
+alert(buf.byteLength);            // 16 
+\end{JavaScript}
+
+\texttt{ArrayBuffer}一经创建就不能再调整大小。不过，可以使用\texttt{slice()}复制其全部或部分到一个新实例中：
+
+\begin{JavaScript}
+const buf1 = new ArrayBuffer(16); 
+const buf2 = buf1.slice(4, 12); 
+alert(buf2.byteLength);  // 8
+\end{JavaScript}
+
+\texttt{ArrayBuffer} 在申请内存时有几个注意点: 
+\begin{itemize}
+    \item 分配失败时会抛出错误。
+    \item 分配内存大小有限制 \texttt{Number.MAX\_SAFE\_INTEGER$2^{53}-1$}字节。
+    \item 会将所有二进制位初始化为0。
+    \item 自动 GC。
+\end{itemize}
+
+不能仅通过对\texttt{ArrayBuffer}的引用就读取或写入其内容。要读取或写入\texttt{ArrayBuffer}，就必须通过视图。视图有不同的类型，但引用的都是\texttt{ArrayBuffer}中存储的二进制数据。
+
+\subsection{\texttt{Map} 映射}
+
+\subsubsection{\texttt{Map}}
+
+在 ES6 以前，JavaScript 实现 "键/值" 式存储可以使用 \texttt{Object} 来方便高效地完成。这样做没什么问题，但 ES6 以后更推荐使用 \texttt{Map} 存储键值对。
+
+Map 的构造方法有很多，比较常用的可以直接通过二维数组构造:
+
+\begin{JavaScript}
+const m = new Map([   
+    ["key1", "val1"],    
+    ["key2", "val2"],   
+    ["key3", "val3"] 
+]); 
+\end{JavaScript}
+
+JavaScript 的 \texttt{Map} 有一点与众不同：它是有序的。而 \texttt{Object} 作为 \texttt{Map} 使用时却是无序的，这两者之前有如下差异:
+\begin{itemize}
+    \item \texttt{Map} 有序，\texttt{Object} 无序。
+    \item \texttt{Map} 在同等内存大小下可以比 \texttt{Object} 多存储 50\% 的数据。
+    \item 插入性能: \texttt{Map} 比 \texttt{Object} 好一点。
+    \item 查找性能: \texttt{Object} 比 \texttt{Map} 好一点。
+    \item 删除性能: \texttt{Map} 比 \texttt{Object} 好一点。
+\end{itemize}
+
+\subsubsection{\texttt{WeakMap}}
+
+\texttt{WeakMap} 时 \texttt{Map} 的子集。这里的 \texttt{weak} 指的是 GC 对待 ``弱映射'' 中键的方式。
+
+弱映射中的键只能是\texttt{Object}或者继承自\texttt{Object}的类型，尝试使用非对象设置键会抛出\texttt{TypeError}。值的类型没有限制。
+
+\texttt{WeakMap}中“weak”表示弱映射的键是“弱弱地拿着”的。意思就是，这些键不属于正式的引用，不会阻止垃圾回收。但要注意的是，弱映射中值的引用可不是“弱弱地拿着”的。只要键存在，键/值对就会存在于映射中，并被当作对值的引用，因此就不会被当作垃圾回收。
+
+\begin{JavaScript}
+const wm = new WeakMap(); 
+wm.set({}, "val"); 
+\end{JavaScript}
+
+上述代码执行完后，由于空对象不存在引用，所以它会被 GC，同时键被 GC 后，值也失去了引用，也会被 GC。
+
+因为 \texttt{WeakMap} 中的键/值对任何时候都可能被销毁，所以没必要提供迭代其键/值对的能力。因为\texttt{WeakMap}实例不会妨碍垃圾回收，所以非常适合保存关联元数据。
+
+\subsection{\texttt{Set} 集合}
+
+\texttt{Set} 也是 ES6 新增的类型，\texttt{Set}在很多方面都像是加强的\texttt{Map}，这是因为它们的大多数API和行为都是共有的。
+
+同样，可以使用数组初始化 \texttt{Set}。
+
+\begin{JavaScript}
+const s1 = new Set(["val1", "val2", "val3"]);
+\end{JavaScript}
+
+\texttt{Set} 的很多特性和 \texttt{Map} 一致，可以存储任意类型，维护插入顺序，用于对应的弱集合 \texttt{WeakSet}。
+
+\newpage

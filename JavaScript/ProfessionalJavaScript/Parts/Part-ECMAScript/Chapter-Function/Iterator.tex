@@ -1,0 +1,38 @@
+\section{迭代器与生成器}
+
+\subsection{迭代器}
+
+迭代器基础不讲，ECMAScript 的这些内置类型实现了 Iterable 接口: 字符串，数组，映射，集合，\texttt{arguments 对象}, \texttt{NodeList} 等 DOM 集合类型。如果要自定义可迭代对象，写一个 \texttt{next()} 方法即可。
+
+\subsection{生成器}
+
+生成器是 ES6 新增的一个极为灵活的结构，拥有在一个函数块内暂停和恢复代码执行的能力。这种新能力具有深远的影响，比如，使用生成器可以自定义迭代器和实现协程。
+
+生成器的形式是一个函数，函数名称前面加一个星号（*）表示它是一个生成器。只要是可以定义函数的地方，就可以定义生成器。
+
+\begin{JavaScript}
+// 生成器函数声明
+function * generatorFn() {...}
+// 生成器哈桑农户表达式
+let generationFn = function*() {...}
+// 作为对象字面量方法的生成器函数
+let foo = {    
+    * generatorFn() {} 
+} 
+// 作为类实例方法的生成器函数
+class Foo {   
+    * generatorFn() {} 
+} 
+// 作为类静态方法的生成器函数
+class Bar {   
+    static * generatorFn() {} 
+} 
+\end{JavaScript}
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{notice}
+            箭头函数不能用来定义生成器函数。
+        \end{notice}
+    }
+}

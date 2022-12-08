@@ -43,6 +43,7 @@
 \RequirePackage{bm}                     % 公式加粗
 \RequirePackage{pgf-umlcd}              % 类图
 \RequirePackage{multicol}               % 双栏
+\RequirePackage{pgf-umlcd}              % 类图
 
 % 扩展的表格宏包和插图宏包
 % \RequirePackage{subfig}
@@ -57,7 +58,7 @@
 \fancyhf{}
 \renewcommand\headrulewidth{0pt}
 \fancyfoot[L]{\small{\today}}
-\fancyfoot[C]{\small{Professional JavaScript Notebook}}
+\fancyfoot[C]{\small{Core Java Notebook}}
 \fancyfoot[R]{\small{ \thepage{} / \pageref{LastPage}}}
 % titletoc-目录样式
 \titlecontents{section}[0pt]{\addvspace{2pt}\filright}%
@@ -90,7 +91,6 @@
 % 设置脚注格式
 \edef\footnoterule{\vfil\footnoterule}
 
-
 % ========================= 新的命令 =========================
 \renewcommand*{\textfraction}{0.05}
 \renewcommand*{\topfraction}{0.9}
@@ -115,7 +115,6 @@
 \newtheorem{notice}{\hspace{2em}注意}[section] 
 \newtheorem{advise}{\hspace{2em}建议}[section] 
 \newtheorem{version}{\hspace{2em}问题}[section]
-
 
 % ========================= 基础格式 =========================
 % ========== 字体设置 ==========
@@ -452,6 +451,60 @@
         keywordstyle=\color{custom-blue},
         commentstyle=\color{custom-green},
         stringstyle=\color{vscode-light-orange},
+        breaklines=true,
+        breakatwhitespace=true,
+        tabsize=2,
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{gray}\ttfamily,
+        stepnumber=1,
+        flexiblecolumns,   
+        breaklines=true,
+        basewidth=0.5em,
+        numbersep=10pt,
+        xleftmargin=40pt,
+	}
+}{}
+
+% 设置 Java 代码风格
+\lstset{
+    frame=l,
+    backgroundcolor=\color{lightgray!10},
+    language=Java,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    basicstyle={\footnotesize\ttfamily},
+    keywordstyle=\color{custom-blue},
+    commentstyle=\color{custom-green},
+    stringstyle=\color{custom-red},
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=2,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray}\ttfamily,
+    stepnumber=1,
+    flexiblecolumns,   
+    breaklines=true,
+    basewidth=0.5em,
+    numbersep=10pt,
+    xleftmargin=40pt,
+}
+
+% 设置Java代码环境
+\lstnewenvironment{Java}[1][]{
+	\lstset{
+        frame=l,
+        backgroundcolor = \color{lightgray!10},
+        language=Java,
+        aboveskip=3mm,
+        belowskip=3mm,
+        showstringspaces=false,
+        basicstyle={\footnotesize\ttfamily},
+        keywordstyle=\color{custom-blue},
+        commentstyle=\color{custom-green},
+        stringstyle=\color{custom-red},
         breaklines=true,
         breakatwhitespace=true,
         tabsize=2,
