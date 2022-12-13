@@ -1,5 +1,7 @@
 \section{函数}
 
+\subsection{定义函数的多种方式}
+
 ECMAScript 中，每个函数都是 \texttt{Function} 类型的实例\footnote{与 Python 一样。}。而 \texttt{Function} 也有属性和方法，跟其他引用类型一样。函数名就是指向函数对象的指针，而且不一定与函数本身密切绑定。函数通常以函数声明的方式定义:
 
 \begin{JavaScript}
@@ -8,7 +10,7 @@ function sum(num1, num2) {
 }
 \end{JavaScript}
 
-另一种定义函数的语法是函数表达式。函数表达式与函数声明几乎是等价的:
+另一种定义函数的语法是函数表达式。函数表达式与函数声明几乎是等价的，但是函数表达式不会提升，也即必须先声明后调用:
 
 \begin{JavaScript}
 let sum = function(num1, num2) {
@@ -16,9 +18,17 @@ let sum = function(num1, num2) {
 };
 \end{JavaScript}
 
+函数表达式可以通过这种方式立刻被调用，块级作用域的语句会被立即执行:
+
+\begin{JavaScript}
+(function() {   
+    // 块级作用域
+})(); 
+\end{JavaScript}
+
 注意函数表达式最后是要带分号的，而函数声明则没有必要。
 
-还有一种定义函数的方式与函数表达式很想，叫``箭头函数'':
+还有一种定义函数的方式与函数表达式很像，叫``箭头函数''(类似 lambda 表达式):
 
 \begin{JavaScript}
 let sum = (num1, num2) => {
@@ -26,15 +36,13 @@ let sum = (num1, num2) => {
 };
 \end{JavaScript}
 
-最后一种定义函数的方式是使用 \texttt{Function} 构造函数。这个构造函数手机任意多个字符串参数，最后一个参数为函数体，之前的参数都是新函数的参数:
+最后一种定义函数的方式是使用 \texttt{Function} 构造函数。这个构造函数收集任意多个字符串参数，最后一个参数为函数体，之前的参数都是新函数的参数:
 
 \begin{JavaScript}
 let sum = new Function("num1", "num2", "return num1 + num2");
 \end{JavaScript}
 
 这种方式并不推荐，会影响内部处理的性能。不过要记作 ECMAScript 中的函数是对象，函数名是指针。
-
-\subsection{箭头函数}
 
 箭头函数是 ES6 新增的语法。箭头函数和函数表达式十分相像，任何可以使用函数表达式的地方，都可以使用箭头函数。
 
@@ -61,7 +69,9 @@ let double = x => 2 * x;
 
 箭头函数虽然语法简洁，但也有很多场合不适合。箭头函数不能使用 \texttt{arguments , super} 和 \texttt{new.target}，也不能用作构造函数。此外，箭头函数也没有 \texttt{prototype} 属性。
 
-\subsection{函数名}
+\subsection{ECMAScript 的函数}
+
+\subsubsection*{函数名}
 
 因为函数名是指向函数的指针，所以它们跟其他包含对象指针的变量具有相同行为。这意味着一个函数可以拥有多个名称。
 
@@ -81,7 +91,7 @@ console.log((new Function()).name);      // anonymous
 
 如果一个函数是获取函数，设置函数，或者使用 \texttt{bind()} 实例化，那么标识符前面会加上一个前缀\footnote{后文会详细说明}。
 
-\subsection{理解函数}
+\subsubsection*{函数参数}
 
 ECMAScript 的函数去其他大多数语言不同，它既不关心参数的类型也不关心参数的个数，甚至传入参数的个数可以超过定义函数时参数的个数。
 
@@ -101,5 +111,104 @@ function sayHi() {
 \end{JavaScript}
 
 上面例子表明，ECMAScript 函数的参数只是为了方便才写出来的，并不是必须写出来。与此同时，ECMAScript 中的命名参数不会创建让之后的调用必须匹配的函数签名。这是因为根本不存在验证命名参数的机制。
+
+如前所述，ECMAScript 的函数参数本质上是一个数组，且并不对这个数组进行校验，因此函数无法重载。
+
+ES6 起，可以显示定义默认参数。
+
+\begin{JavaScript}
+function makeKing(name = 'Henry') {   
+    return name;  
+} 
+\end{JavaScript}
+
+ECMAScript 支持参数扩展，传入参数时可以通过 ... 将可迭代对象拆分为独立的参数:
+
+\begin{JavaScript}
+function getSum() {   
+    let sum = 0;   
+    for (let i = 0; i < arguments.length; ++i) {     
+        sum += arguments[i];   
+    }   
+    return sum; 
+} 
+let values = [1,2,3,4];
+console.log(getSum(...values)); // 10
+\end{JavaScript}
+
+同时，定义函数时 ... 表示多个任意个参数组成的数组:
+
+\begin{JavaScript}
+function ignoreFirst(firstValue, ...values) {   
+    console.log(values); 
+}
+ignoreFirst(1,2,3);  // [2, 3]
+\end{JavaScript}
+
+\subsection{函数内部}
+
+我们知道，JavaScript 中的函数本质上是 \texttt{Function} 类的实例，因此将 JavaScript 的函数当作对象来看，既可以在参数中使用函数，也可以定义函数闭包(类似于Java内部类)，也可以拥有属性，总而言之，\texttt{Object} 能做的，他都能做。
+
+在 ES6 后，函数内部有三个特殊的对象: \texttt{arguments, this, new.target}。
+
+\begin{itemize}
+    \item \texttt{arguments}: 前面出现过多次，本质上是一个数组对象，包含调用函数时传入的所有参数。这个对象只有以 \texttt{function} 关键字定义函数时有用(箭头函数没用)。\texttt{arguments} 有一个特殊的属性: \texttt{callee}，它可以指向 \texttt{arguments} 对象所在的函数，因此可以在函数内部这样调用函数本身: \texttt{arguments.callee}(严格模式下不准这样用)。
+    \item \texttt{this}: 在标准函数和箭头函数中不同
+    \begin{itemize}
+        \item 标准函数: \texttt{this}引用的是把函数当成方法调用的上下文对象，这时候通常称其为\texttt{this}值（在网页的全局上下文中调用函数时，\texttt{this}指向\texttt{windows}）
+\begin{JavaScript}
+window.color = 'red';  
+let o = { color: 'blue' }; 
+function sayColor() {   
+    console.log(this.color); 
+} 
+sayColor();    // 'red' 
+o.sayColor = sayColor; 
+o.sayColor();  // 'blue'
+\end{JavaScript}
+        \item 在箭头函数中，\texttt{this} 引用的是定义箭头函数的上下文(更符合多数语言中 \texttt{this} 的作用)。
+    \end{itemize}
+    \item \texttt{caller}: ES5 新增的函数属性，这个属性引用的是调用当前函数的函数。
+    \item \texttt{new.target}: ECMAScript中的函数始终可以作为构造函数实例化一个新对象，也可以作为普通函数被调用。ECMAScript 6新增了检测函数是否使用\texttt{new}关键字调用的\texttt{new.target}属性。如果函数是正常调用的，则\texttt{new.target}的值是\texttt{undefined}; 如果是使用new关键字调用的，则\texttt{new.target}将引用被调用的构造函数。
+\begin{JavaScript}
+function King() {
+    if (!new.target) {
+        throw 'King must be instantiated using "new"';
+    }
+    console.log('King instantiated using "new"');
+}
+new King(); // King instantiated using "new" 
+King();     // Error: King must be instantiated using "new" 
+\end{JavaScript}
+\end{itemize}
+
+函数有两个特殊属性:
+\begin{itemize}
+    \item \texttt{length}: 保存函数定义的命名参数的个数。
+    \item \texttt{prototype}: 保存引用类型所有实例方法的地方。
+\end{itemize}
+
+函数有两个特殊方法:
+\begin{itemize}
+    \item \texttt{apply()}: 接收两个参数：函数内\texttt{this}的值和一个参数数组。第二个参数可以是\texttt{Array}的实例，也可以是\texttt{arguments}对象。
+\begin{JavaScript}
+function sum(num1, num2) {
+    return num1 + num2;
+}
+function callSum1(num1, num2) {
+    return sum.apply(this, arguments);
+    // 传入arguments对象
+}
+function callSum2(num1, num2) {
+    return sum.apply(this, [num1, num2]); // 传入数组
+}
+console.log(callSum1(10, 10));  // 20 
+console.log(callSum2(10, 10));  // 20 
+\end{JavaScript}
+    \item \texttt{call()}: 和 \texttt{apply()} 方法作用一样，不过第二及以后参数是单个对象，而不是数组。
+\end{itemize}
+
+
+
 
 \newpage

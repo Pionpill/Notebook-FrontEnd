@@ -2,7 +2,9 @@
 
 \subsection{迭代器}
 
-迭代器基础不讲，ECMAScript 的这些内置类型实现了 Iterable 接口: 字符串，数组，映射，集合，\texttt{arguments 对象}, \texttt{NodeList} 等 DOM 集合类型。如果要自定义可迭代对象，写一个 \texttt{next()} 方法即可。
+迭代器基础不讲，ECMAScript 的这些内置类型实现了 \texttt{Iterable} 接口: 字符串，数组，映射，集合，\texttt{arguments 对象}, \texttt{NodeList} 等 DOM 集合类型。
+
+如果要自定义可迭代对象，写一个 \texttt{next()} 方法即可。\texttt{next()} 方法返回的是一个对象，包含 \texttt{done} 和 \texttt{value} 两个元素，其中 \texttt{done} 为 \texttt{Boolean} 表示迭代器返回成功与否，\texttt{value} 为返回的数据。
 
 \subsection{生成器}
 
@@ -36,3 +38,60 @@ class Bar {
         \end{notice}
     }
 }
+
+调用生成器函数会产生一个生成器对象。生成器对象一开始处于暂停执行（suspended）的状态。与迭代器相似，生成器对象也实现了\texttt{Iterator}接口，因此具有\texttt{next()}方法。调用这个方法会让生成器开始或恢复执行。
+
+\begin{JavaScript}
+function* generatorFn() {} 
+const g = generatorFn(); 
+console.log(g);       // generatorFn {<suspended>} 
+console.log(g.next);  // f next() { [native code] } 
+\end{JavaScript}
+
+\texttt{yield}关键字可以让生成器停止和开始执行，也是生成器最有用的地方。生成器函数在遇到\texttt{yield}关键字之前会正常执行。遇到这个关键字后，执行会停止，函数作用域的状态会被保留。停止执行的生成器函数只能通过在生成器对象上调用\texttt{next()}方法来恢复执行：
+
+\texttt{yield}关键字有点像函数的中间返回语句，它生成的值会出现在\texttt{next()}方法返回的对象里。通过\texttt{yield}关键字退出的生成器函数会处在\texttt{done: false}状态；通过\texttt{return}关键字退出的生成器函数会处于\texttt{done: true}状态。
+
+\begin{JavaScript}
+function* generatorFn() {  
+    yield 'foo'; yield 'bar';   
+    return 'baz'; 
+} 
+let generatorObject = generatorFn(); 
+console.log(generatorObject.next());  // { done: false, value: 'foo' } 
+console.log(generatorObject.next());  // { done: false, value: 'bar' } 
+console.log(generatorObject.next());  // { done: true, value: 'baz' } 
+\end{JavaScript}
+
+生成器函数内部的执行流程会针对每个生成器对象区分作用域。在一个生成器对象上调用\texttt{next()}不会影响其他生成器：
+
+\begin{JavaScript}
+function* generatorFn() {   
+    yield 'foo';    
+    yield 'bar';   
+    return 'baz'; 
+} 
+let generatorObject1 = generatorFn(); 
+let generatorObject2 = generatorFn(); 
+console.log(generatorObject1.next()); // { done: false, value: 'foo' } 
+console.log(generatorObject2.next()); // { done: false, value: 'foo' } 
+\end{JavaScript}
+
+\fbox{
+    \parbox{0.87\textwidth}{
+        \begin{advise}
+            由于生成器在实际开发过程中用的并不多，这里仅作基本介绍。JS 的生成器一定程度上参考了 python 的生成器，有兴趣的读者请自行了解。
+        \end{advise}
+    }
+}
+
+
+
+
+
+
+
+
+
+
+\newpage

@@ -1,0 +1,526 @@
+\section{对象，类}
+
+ECMA-262将对象定义为一组属性的无序集合。严格来说，这意味着对象就是一组没有特定顺序的值。对象的每个属性或方法都由一个名称来标识，这个名称映射到一个值。正因为如此（以及其他还未讨论的原因），可以把ECMAScript的对象想象成一张散列表，其中的内容就是一组名/值对，值可以是数据或者函数。
+
+\subsection{对象}
+
+创建自定义对象的通常方式是创建\texttt{Object}的一个新实例，然后再给它添加属性和方法：
+
+\begin{JavaScript}
+// 写法一
+let person = new Object(); 
+person.name = "Nicholas"; 
+person.age = 29; 
+person.job = "Software Engineer"; 
+person.sayName = function() {   
+    console.log(this.name);  
+}; 
+// 写法二
+let person = {    
+    name: "Nicholas",   
+    age: 29,   
+    job: "Software Engineer",   
+    sayName() {     
+        console.log(this.name);   
+    } 
+};
+\end{JavaScript}
+
+\subsubsection{属性的类型}
+
+ECMA-262使用一些内部特性来描述属性的特征。为了将某个特性标识为内部特性，规范会用两个中括号把特性的名称括起来，比如\texttt{[[Enumerable]]}。
+
+属性分为两种: 数据属性和访问器属性。
+
+\noindent\textbf{数据属性}
+
+数据属性包含一个保存数据值的位置。值会从这个位置读取，也会写入到这个位置。数据属性有4个特性描述它们的行为。
+
+\begin{itemize}
+    \item \texttt{[[Configuration]]}: 表示属性是否可以通过 \texttt{delete} 删除并重新定义，是否可以修改它的特性，以及是否可以把它改为访问器属性。默认为 \texttt{true}。
+    \item \texttt{[[Enumerate]]}: 表示属性是否可以通过\texttt{for-in}循环返回。默认是\texttt{true}。
+    \item \texttt{[[Writable]]}: 表示属性的值是否可以被修改。默认是\texttt{true}。
+    \item \texttt{[[Value]]}: 包含属性实际的值。默认为\texttt{undefined}。
+\end{itemize}
+
+要修改属性的默认特性，就必须使用\texttt{Object.defineProperty}()方法。这个方法接收3个参数：要给其添加属性的对象、属性的名称和一个描述符对象。最后一个参数，即描述符对象上的属性可以包含：\texttt{configurable、enumerable、writable}和\texttt{value}，跟相关特性的名称一一对应。根据要修改的特性，可以设置其中一个或多个值。比如：
+
+\begin{JavaScript}
+let person = {};  
+Object.defineProperty(person, "name", {   
+    writable: false,   
+    value: "Nicholas" 
+}); 
+console.log(person.name); // "Nicholas" 
+person.name = "Greg"; 
+console.log(person.name); // "Nicholas" 
+\end{JavaScript}
+
+如果 \texttt{[[Configuration]]} 被设置为 \texttt{false}，则不可以再通过 \texttt{defineProperty} 配置属性。
+
+\noindent\textbf{访问器属性}
+
+访问器属性不包含数据值。相反，它们包含一个获取（\texttt{getter}）函数和一个设置（\texttt{setter}）函数，不过这两个函数不是必需的。在读取访问器属性时，会调用获取函数，这个函数的责任就是返回一个有效的值。在写入访问器属性时，会调用设置函数并传入新值，这个函数必须决定对数据做出什么修改。访问器属性有4个特性描述它们的行为。
+
+\begin{itemize}
+    \item \texttt{[[Configuration]]}: 表示属性是否可以通过 \texttt{delete} 删除并重新定义，是否可以修改它的特性，以及是否可以把它改为访问器属性。默认为 \texttt{true}。
+    \item \texttt{[[Enumerate]]}: 表示属性是否可以通过\texttt{for-in}循环返回。默认是\texttt{true}。
+    \item \texttt{[[Get]]}: 获取函数，在读取属性时调用。默认值为\texttt{undefined}。
+    \item \texttt{[[Set]]}: 设置函数，在写入属性时调用。默认值为\texttt{undefined}。
+\end{itemize}
+
+访问器属性是不能直接定义的，必须使用\texttt{Object.defineProperty()}。
+
+\begin{JavaScript}
+let book = {    
+    year_: 2017,   
+    edition: 1
+}; 
+
+Object.defineProperty(book, "year", {
+    get() {     
+        return this.year_;   
+    },   
+    set(newValue) {     
+        if (newValue > 2017) {       
+            this.year_ = newValue;       
+            this.edition += newValue - 2017;     
+        }   
+    } 
+}); 
+book.year = 2018; 
+console.log(book.edition); // 2 
+\end{JavaScript}
+
+同时，ECMAScript提供了 \texttt{Object.defineProperties()} 方法来同时定义多个属性:
+
+\begin{JavaScript}
+let book = {};  
+Object.defineProperties(book, {   
+    year_: {     
+        value: 2017   
+    },   
+    edition: {     
+        value: 1   
+    },   
+    year: {     
+        get() {       
+            return this.year_;     
+        }, 
+        set(newValue) {       
+            if (newValue > 2017) {         
+                this.year_ = newValue;         
+                this.edition += newValue - 2017;       
+            }     
+        }   
+    } 
+}); 
+\end{JavaScript}
+
+使用\texttt{Object.getOwnPropertyDescriptor()}方法可以取得指定属性的属性描述符。这个方法接收两个参数：属性所在的对象和要取得其描述符的属性名。返回值是一个对象，对于访问器属性包含\texttt{configurable、enumerable、get}和\texttt{set}属性，对于数据属性包含\texttt{configurable、enumerable、writable}和\texttt{value}属性。
+
+ES6 也提供了访问多个属性的方法: \texttt{Object.getOwnPropertyDescriptors()}。
+
+\subsubsection{对象操作}
+
+\noindent\textbf{\texttt{Object.assign()}}
+
+ES6 专门为合并对象提供了\texttt{Object.assign()}方法。这个方法接收一个目标对象和一个或多个源对象作为参数，然后将每个源对象中可枚举（\texttt{Object.propertyIsEnumerable()}返回\texttt{true}）和自有（\texttt{Object.hasOwnProperty()}返回\texttt{true}）属性复制到目标对象。以字符串和符号为键的属性会被复制。对每个符合条件的属性，这个方法会使用源对象上的\texttt{[[Get]]}取得属性的值，然后使用目标对象上的\texttt{[[Set]]}设置属性的值。
+
+如果赋值期间出错，则操作会中止并退出，同时抛出错误。\texttt{Object.assign()没}有“回滚”之前赋值的概念，因此它是一个尽力而为、可能只会完成部分复制的方法。
+
+\noindent\textbf{对象解构}
+
+ECMAScript 6新增了对象解构语法，可以在一条语句中使用嵌套数据实现一个或多个赋值操作。简单地说，对象解构就是使用与对象匹配的结构来实现对象属性赋值。
+
+\begin{JavaScript}
+let person = {   
+    name: 'Matt',   
+    age: 27 
+}; 
+let { name: personName, age: personAge } = person; 
+console.log(personName);  // Matt 
+console.log(personAge);   // 27 
+\end{JavaScript}
+
+使用解构，可以在一个类似对象字面量的结构中，声明多个变量，同时执行多个赋值操作。如果想让变量直接使用属性的名称，那么可以使用简写语法，比如：
+
+\begin{JavaScript}
+let person = {    
+    name: 'Matt',   
+    age: 27 
+}; 
+let { name, age, job } = person; 
+console.log(name);  // Matt 
+console.log(age);   // 27 
+console.log(job);   // undefined 
+\end{JavaScript}
+
+解构在内部使用函数\texttt{ToObject()}（不能在运行时环境中直接访问）把源数据结构转换为对象。这意味着在对象解构的上下文中，原始值会被当成对象。这也意味着（根据\texttt{ToObject()}的定义），\texttt{null}和\texttt{undefined}不能被解构，否则会抛出错误。
+
+解构对于引用嵌套的属性或赋值目标没有限制。为此，可以通过解构来复制对象属性：
+
+\begin{JavaScript}
+let person = {    
+    name: 'Matt',   
+    age: 27,   
+    job: {     
+        title: 'Software engineer'   
+    } 
+}; 
+let personCopy = {}; 
+
+({   
+    name: personCopy.name,   
+    age: personCopy.age,   
+    job: personCopy.job 
+} = person); 
+
+person.job.title = 'Hacker' 
+console.log(person);        // { name: 'Matt', age: 27, job: { title: 'Hacker' } } 
+console.log(personCopy);    // { name: 'Matt', age: 27, job: { title: 'Hacker' } } 
+\end{JavaScript}
+
+\subsection{创建对象}
+
+\subsubsection{工厂模式鱼构造函数模式}
+
+虽然使用\texttt{Object}构造函数或对象字面量可以方便地创建对象，但这些方式也有明显不足：创建具有同样接口的多个对象需要重复编写很多代码。
+
+\noindent\textbf{工厂模式}
+
+\begin{JavaScript}
+function createPerson(name, age, job) {   
+    let o = new Object();    
+    o.name = name;   
+    o.age = age;   
+    o.job = job;   
+    o.sayName = function() {     
+        console.log(this.name);   
+    };   
+    return o; 
+} 
+let person1 = createPerson("Nicholas", 29, "Software Engineer"); 
+let person2 = createPerson("Greg", 27, "Doctor");
+\end{JavaScript}
+
+这里，函数\texttt{createPerson()}接收3个参数，根据这几个参数构建了一个包含\texttt{Person}信息的对象。可以用不同的参数多次调用这个函数，每次都会返回包含3个属性和1个方法的对象。这种工厂模式虽然可以解决创建多个类似对象的问题，但没有解决对象标识问题（即新创建的对象是什么类型）。
+
+\noindent\textbf{构造函数模式}
+
+前面的例子使用构造函数模式可以这样写：
+
+\begin{JavaScript}
+function Person(name, age, job){    
+    this.name = name;   
+    this.age = age;   
+    this.job = job;   
+    this.sayName = function() {     
+        console.log(this.name);   
+    }; 
+} 
+let person1 = new Person("Nicholas", 29, "Software Engineer"); 
+let person2 = new Person("Greg", 27, "Doctor"); 
+person1.sayName();  // Nicholas 
+person2.sayName();  // Greg 
+\end{JavaScript}
+
+在这个例子中，\texttt{Person()}构造函数代替了\texttt{createPerson()}工厂函数。实际上，\texttt{Person()}内部的代码跟\texttt{createPerson()}基本是一样的，只是有如下区别。
+
+\begin{itemize}
+    \item 没有显式地创建对象。
+    \item 属性和方法直接赋值给了\texttt{this}。
+    \item 没有\texttt{return}。
+\end{itemize}
+
+另外，要注意函数名\texttt{Person}的首字母大写了。按照惯例，构造函数名称的首字母都是要大写的，非构造函数则以小写字母开头。这是从面向对象编程语言那里借鉴的，有助于在ECMAScript中区分构造函数和普通函数。毕竟ECMAScript的构造函数就是能创建对象的函数。
+
+要创建\texttt{Person}的实例，应使用\texttt{new}操作符。以这种方式调用构造函数会执行如下操作。
+
+\begin{itemize}
+    \item 在内存中创建一个新对象。
+    \item 这个新对象内部的\texttt{[[Prototype]]}特性被赋值为构造函数的\texttt{prototype}属性。
+    \item 构造函数内部的\texttt{this}被赋值为这个新对象（即\texttt{this}指向新对象）。
+    \item 执行构造函数内部的代码（给新对象添加属性）。
+    \item 如果构造函数返回非空对象，则返回该对象；否则，返回刚创建的新对象。
+\end{itemize}
+
+上一个例子的最后，\texttt{person1}和\texttt{person2}分别保存着\texttt{Person}的不同实例。这两个对象都有一个\texttt{constructor}属性指向\texttt{Person}，如下所示：
+
+\begin{JavaScript}
+console.log(person1.constructor == Person);  // true 
+console.log(person2.constructor == Person);  // true 
+\end{JavaScript}
+
+在实例化时，如果不想传参数，那么构造函数后面的括号可加可不加。只要有new操作符，就可以调用相应的构造函数。
+
+构造函数与普通函数唯一的区别就是调用方式不同。除此之外，构造函数也是函数。并没有把某个函数定义为构造函数的特殊语法。任何函数只要使用new操作符调用就是构造函数，而不使用new操作符调用的函数就是普通函数。
+
+\subsubsection{原型模式}
+
+每个函数都会创建一个\texttt{prototype}属性，这个属性是一个对象，包含应该由特定引用类型的实例共享的属性和方法。实际上，这个对象就是通过调用构造函数创建的对象的原型。使用原型对象的好处是，在它上面定义的属性和方法可以被对象实例共享。原来在构造函数中直接赋给对象实例的值，可以直接赋值给它们的原型，如下所示：
+
+\begin{JavaScript}
+function Person() {} 
+Person.prototype.name = "Nicholas"; 
+Person.prototype.age = 29; 
+Person.prototype.job = "Software Engineer"; 
+Person.prototype.sayName = function() {   
+    console.log(this.name);  
+}; 
+let person1 = new Person(); 
+person1.sayName(); // "Nicholas" 
+let person2 = new Person(); 
+person2.sayName(); // "Nicholas" 
+console.log(person1.sayName == person2.sayName); // true 
+\end{JavaScript}
+
+
+\noindent\textbf{理解原型}
+
+无论何时，只要创建一个函数，就会按照特定的规则为这个函数创建一个\texttt{prototype}属性（指向原型对象）。默认情况下，所有原型对象自动获得一个名为\texttt{constructor}的属性，指回与之关联的构造函数。因构造函数而异，可能会给原型对象添加其他属性和方法。
+
+每次调用构造函数创建一个新实例，这个实例的内部\texttt{[[Prototype]]}指针就会被赋值为构造函数的原型对象。实例与构造函数原型之间有直接的联系，但实例与构造函数之间没有。
+
+在 JavaScript 内部，和实例对象相关的有三个对象:
+\begin{itemize}
+    \item 构造函数: 我们定义的，一般为首字母大写的的函数。包含如下成员:
+    \begin{itemize}
+        \item \texttt{prototype}: 指向函数原型。
+    \end{itemize}
+    \item 函数原型: 我们定义构造函数后，自动生成的，用于存储数据。包含如下成员:
+    \begin{itemize}
+        \item \texttt{constructor}: 指向构造函数。
+        \item 构造函数定义的成员。
+    \end{itemize}
+    \item 实例对象: 通过构造函数创建的实例对象，保存一个 \texttt{[[prototype]]} 属性指向函数原型。可以通过 \texttt{\_\_proto\_\_} 属性访问。
+\end{itemize}
+
+也就是说，我们在创建一个函数时，JavaScript 内部会创建这个函数对应的原型，函数本身只保存指向这个原型的指针，通过函数创建对象实例时本质上时通过原型创建实例。
+
+\noindent\textbf{原型的问题}
+
+原型模式弱化了向构造函数传递初始化参数的能力，会导致所有实例默认都取得相同的属性值。虽然这会带来不便，但还不是原型的最大问题。原型的最主要问题源自它的共享特性。
+
+这对于函数来说没有什么问题，函数一般不会也不建议保存数据。而对于属性来说，则要注意不要轻易修改原型中的属性，这会导致所有使用该原型的实例对象保存的属性均被改变。
+
+\subsection{继承}
+
+\subsubsection{原型链继承}
+
+我们知道，ECMAScript 是没有类的，所有对象均源自原生的 \texttt{Object} 类型。本质上，ECMAScript 的核心设计思想:原型 代替了 传统语言的类与继承思想。这两者在具体实现上不同，但实现的效果类似。简而言之，ECMAScript 通过原型链实现类的继承，并且用法类似。
+
+默认情况下，所有引用对象都继承自 \texttt{Object}，因此自定义构造函数的原型也指向 \texttt{Object} 的 \texttt{Prototype}。 
+
+确认继承关系有两种方式，一种是通过原生的 \texttt{instanceof} 操作符，另一种时通过原型的 \texttt{isPrototypeOf} 方法。
+
+由于没有类，要通过原型实现继承，因此需要手动指定 \texttt{prototype} 来实现继承:
+
+\begin{JavaScript}
+function SuperType() {    
+    this.property = true; 
+} 
+SuperType.prototype.getSuperValue = function() {   
+    return this.property; 
+}; 
+function SubType() {   
+    this.subproperty = false; 
+} 
+
+// 继承SuperType 
+SubType.prototype = new SuperType(); 
+
+// 新方法
+SubType.prototype.getSubValue = function () { 
+    return this.subproperty; 
+}; 
+
+// 覆盖已有的方法
+SubType.prototype.getSuperValue = function () { 
+    return false; 
+}; 
+let instance = new SubType(); 
+console.log(instance.getSuperValue()); // false 
+\end{JavaScript}
+
+\subsubsection{经典继承}
+
+这样继承存在一个问题，原型包含引用值，对原型引用值得修改将影响所有与之关联的对象。为了解决这个问题，引入了 ``盗用构造函数''(也称``经典继承'')。
+
+\begin{JavaScript}
+function SuperType() {    
+    this.colors = ["red", "blue", "green"]; 
+} 
+
+function SubType() { 
+    // 继承SuperType 
+    SuperType.call(this); 
+} 
+
+let instance1 = new SubType(); 
+instance1.colors.push("black"); 
+console.log(instance1.colors); // "red,blue,green,black" 
+let instance2 = new SubType(); 
+console.log(instance2.colors); // "red,blue,green" 
+\end{JavaScript}
+
+通过使用\texttt{call()}（或\texttt{apply()}）方法，\texttt{SuperType}构造函数在为\texttt{SubType}的实例创建的新对象的上下文中执行了。这相当于新的\texttt{SubType}对象上运行了\texttt{SuperType()}函数中的所有初始化代码(不包括函数)。结果就是每个实例都会有自己的\texttt{colors}属性。
+
+如果需要传参，在 \texttt{call()} 的 \texttt{this} 变量后传入其他参数即可。
+
+盗用构造函数的主要缺点，也是使用构造函数模式自定义类型的问题：必须在构造函数中定义方法，因此函数不能重用。此外，子类也不能访问父类原型上定义的方法，因此所有类型只能使用构造函数模式。由于存在这些问题，盗用构造函数基本上也不能单独使用。
+
+\subsubsection{组合继承}
+
+组合继承（有时候也叫伪经典继承）综合了原型链和盗用构造函数，将两者的优点集中了起来。基本的思路是使用原型链继承原型上的属性和方法，而通过盗用构造函数继承实例属性。这样既可以把方法定义在原型上以实现重用，又可以让每个实例都有自己的属性。来看下面的例子：
+
+\begin{JavaScript}
+function SuperType (name){
+    this.name = name;
+    this.colors ["red","blue","green"];
+}
+    
+SuperType.prototype.sayName = function(){
+    console.log(this.name);
+};
+
+function SubType(name,age){
+    //继承属性
+    SuperType.call(this,name);
+    this.age = age;
+}
+
+//继承方法
+SubType.prototype = new SuperType();
+SubType.prototype.sayAge = function () {
+    console.log(this.age);
+}
+\end{JavaScript}
+
+调用 \texttt{call()} 方法本质上时将成员属性都执行一遍，因此 \texttt{SubType} 有了父类的所有属性，而 \texttt{SubType.prototype = new SuperType();} 则表示，原型链上一级为 \texttt{SuperType} 的原型。由于我们已经相当于写过一边成员属性，所以调用时会优先使用 \texttt{SubType} 的成员属性。
+
+这是目前使用最广泛的方法。
+
+\subsection{类}
+
+从前一节可以看出，ECMAScript 通过原型实现对象继承功能写出的代码比较冗余。在 Java,Python 中简单且常用的继承在 JS 中一点都不方便。为此，ES6 提供了正宗的 \texttt{class} 关键字用于定义类，虽然本质上还是原型链。
+
+ECMAScript 中的类与函数类似，但有以下不同:
+\begin{itemize}
+    \item 无法提升。
+    \item 作用域是块作用域，而不是函数作用域。
+\end{itemize}
+
+同样可以用两种方式创建类:
+\begin{JavaScript}
+class Person {};
+const Animal = class {}; 
+\end{JavaScript}
+
+\noindent\textbf{构造函数}
+
+类中的 \texttt{constructor} 函数是类的构造函数，解释器在调用 \texttt{new} 操作时会调用这个函数。构造函数不是必要的，不定义的话构造函数就是空函数。
+
+使用\texttt{new}调用类的构造函数会执行如下操作:
+\begin{itemize}
+    \item 在内存中创建一个新对象。
+    \item 这个新对象内部的\texttt{[[Prototype]]}指针被赋值为构造函数的\texttt{prototype}属性。
+    \item 构造函数内部的\texttt{this}被赋值为这个新对象（即\texttt{this}指向新对象）。
+    \item 执行构造函数内部的代码（给新对象添加属性）。
+    \item 如果构造函数返回非空对象，则返回该对象；否则，返回刚创建的新对象。
+\end{itemize}
+
+类实例化时传入的参数会用作构造函数的参数。如果不需要参数，则类名后面的括号也是可选的：
+
+\begin{JavaScript}
+class Person {
+    constructor(name) {
+        console.log(arguments.length);
+        this.name = name || null;
+    }
+}
+let p1 = new Person;            // 0 
+console.log(p1.name);           // null 
+let p2 = new Person();          // 0 
+console.log(p2.name);           // null 
+let p3 = new Person('Jake');    // 1 
+console.log(p3.name);           // Jake 
+\end{JavaScript}
+
+类构造函数与构造函数的主要区别是，调用类构造函数必须使用\texttt{new}操作符。而普通构造函数如果不使用\texttt{new}调用，那么就会以全局的\texttt{this}（通常是\texttt{window}）作为内部对象。调用类构造函数时如果忘了使用\texttt{new}则会抛出错误：
+
+\noindent\textbf{类不同于函数}
+
+类本质上还是函数，可以使用函数相关的所有操作，但是类内部的成员则有所不同。
+
+每次通过new调用类标识符时，都会执行类构造函数。在这个函数内部，可以为新创建的实例（\texttt{this}）添加“自有”属性。至于添加什么样的属性，则没有限制。另外，在构造函数执行完毕后，仍然可以给实例继续添加新成员。每个实例都对应一个唯一的成员对象，这意味着所有成员都不会在原型上共享。
+
+但是，也可以通过类定义语句把类块中定义的方法作为原型方法，实现实例间共享:
+
+\begin{JavaScript}
+class Person {
+    constructor() {     // 添加到this的所有内容都会存在于不同的实例上    
+        this.locate = () => console.log('instance');
+    } 
+    // 在类块中定义的所有内容都会定义在类的原型上
+    locate() { console.log('prototype'); }
+} let p = new Person();
+p.locate();                 // instance 
+Person.prototype.locate();  // prototype 
+\end{JavaScript}
+
+类中可以有静态方法，但每个类只能有一个静态成员:
+
+\begin{JavaScript}
+class Person {
+    constructor() {     // 添加到this的所有内容都会存在于不同的实例上    
+        this.locate = () => console.log('instance');
+    } 
+    // 在类块中定义的所有内容都会定义在类的原型上
+    locate() {
+        console.log('prototype');
+    }
+    // 定义在类本身上  
+    static locate() {
+        console.log('class', this);
+    } 
+}
+\end{JavaScript}
+
+此外，也可以像函数一样在类定义外增加函数:
+
+\begin{JavaScript}
+// 在类上定义独享的函数
+Person.greeting = 'My name is'; 
+// 在原型上定义共享的函数
+Person.prototype.name = 'Jake';
+\end{JavaScript}
+
+\noindent\textbf{继承}
+
+有类自然有继承，ES6 同时提供了 \texttt{extends} 关键字用于类继承:
+\begin{itemize}
+    \item ES6 规定 JS 是单继承。
+    \item 提供了 \texttt{super} 方法:
+    \begin{itemize}
+        \item 仅限于派生类构造方法和静态方法内部调用。
+        \item 在构造函数中使用 \texttt{super} 用于调用父类构造函数，将实例返回给 \texttt{this}；且 \texttt{this} 必须在 \texttt{super} 之后调用。如果没有定义构造函数，在实例化派生类时会自动调用。
+    \end{itemize}
+\end{itemize}
+
+\noindent\textbf{抽象基类}
+
+有时候可能需要定义这样一个类，它可供其他类继承，但本身不会被实例化。虽然ECMAScript没有专门支持这种类的语法，但通过\texttt{new.target}也很容易实现。\texttt{new.target}保存通过\texttt{new}关键字调用的类或函数。
+
+\begin{JavaScript}
+class Vehicle {
+    constructor() {
+        console.log(new.target);
+        if (new.target === Vehicle) {
+            throw new Error('Vehicle cannot be directly instantiated');
+        }
+    }
+}
+\end{JavaScript}
+
+\newpage
